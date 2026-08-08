@@ -12,14 +12,7 @@ export const setCandidateStatus = createServerFn({ method: "POST" })
     z
       .object({
         candidateId: z.string().min(1),
-        status: z.enum([
-          "New",
-          "Screening",
-          "Interviewing",
-          "Final Round",
-          "Offer",
-          "Rejected",
-        ]),
+        status: z.enum(["New", "Screening", "Interviewing", "Final Round", "Offer", "Rejected"]),
       })
       .parse(d),
   )

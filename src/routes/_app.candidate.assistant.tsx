@@ -109,9 +109,7 @@ function Assistant() {
                 </div>
               )}
               {messages.map((m) => {
-                const text = m.parts
-                  .map((p) => (p.type === "text" ? p.text : ""))
-                  .join("");
+                const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
                 return (
                   <div
                     key={m.id}
@@ -133,18 +131,12 @@ function Assistant() {
                           : "bg-brand text-brand-foreground"
                       }`}
                     >
-                      {m.role === "assistant" ? (
-                        <ReactMarkdown>{text}</ReactMarkdown>
-                      ) : (
-                        text
-                      )}
+                      {m.role === "assistant" ? <ReactMarkdown>{text}</ReactMarkdown> : text}
                     </div>
                   </div>
                 );
               })}
-              {busy && (
-                <div className="text-xs text-muted-foreground">Thinking…</div>
-              )}
+              {busy && <div className="text-xs text-muted-foreground">Thinking…</div>}
             </div>
             <form
               onSubmit={(e) => {
@@ -171,7 +163,9 @@ function Assistant() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={voice.listening ? "Listening…" : "Ask anything, or tap the mic to speak"}
+                placeholder={
+                  voice.listening ? "Listening…" : "Ask anything, or tap the mic to speak"
+                }
                 className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-accent/20"
               />
               <button

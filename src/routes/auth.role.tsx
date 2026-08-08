@@ -16,7 +16,9 @@ function RoleSelectPage() {
           <div className="mb-3 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-brand">
             <Sparkles className="size-3" /> One last step
           </div>
-          <h1 className="font-display text-4xl font-extrabold tracking-tight">How will you use ATS Engine??</h1>
+          <h1 className="font-display text-4xl font-extrabold tracking-tight">
+            How will you use ATS Engine??
+          </h1>
           <p className="mt-3 text-sm text-muted-foreground">
             Pick a portal to tailor your onboarding — you can switch later.
           </p>
@@ -27,7 +29,12 @@ function RoleSelectPage() {
             to="/employer"
             title="I'm hiring talent"
             desc="Manage requisitions, review AI-ranked candidates, and run interviews with your team."
-            features={["AI candidate ranking", "Pipeline analytics", "Interview scheduler", "Offer letters"]}
+            features={[
+              "AI candidate ranking",
+              "Pipeline analytics",
+              "Interview scheduler",
+              "Offer letters",
+            ]}
             icon={Users}
             accent="brand"
           />
@@ -72,7 +79,9 @@ function RoleCard({
       to={to}
       className={`group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-8 transition-all hover:-translate-y-1 hover:border-${accent}/40 hover:shadow-xl`}
     >
-      <div className={`mb-5 grid size-12 place-items-center rounded-xl bg-${accent}/10 text-${accent}`}>
+      <div
+        className={`mb-5 grid size-12 place-items-center rounded-xl bg-${accent}/10 text-${accent}`}
+      >
         <Icon className="size-5" />
       </div>
       <h2 className="font-display text-xl font-extrabold">{title}</h2>

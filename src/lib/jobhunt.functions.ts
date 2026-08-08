@@ -1,11 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import type {
-  DraftedApplication,
-  HuntPassResult,
-  HuntSettings,
-  HuntState,
-} from "./jobhunt.types";
+import type { DraftedApplication, HuntPassResult, HuntSettings, HuntState } from "./jobhunt.types";
 
 export const getJobHunt = createServerFn({ method: "GET" }).handler(
   async (): Promise<HuntState> => {

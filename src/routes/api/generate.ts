@@ -38,9 +38,7 @@ export const Route = createFileRoute("/api/generate")({
           );
         }
 
-        const prompt = body.context
-          ? `${body.context}\n\n---\n\n${body.prompt}`
-          : body.prompt;
+        const prompt = body.context ? `${body.context}\n\n---\n\n${body.prompt}` : body.prompt;
         const wantsLive = body.search || needsLiveData(prompt);
         const grounded = wantsLive ? geminiModel() : null;
         const tools = grounded ? searchTools() : undefined;

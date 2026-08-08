@@ -74,7 +74,7 @@ export const importJobFromUrl = createServerFn({ method: "POST" })
   .validator((d: unknown) => urlInput.parse(d))
   .handler(async ({ data }) => {
     const { requireUserId } = await import("@/lib/session.server");
-        const employerId = await requireUserId();
+    const employerId = await requireUserId();
 
     const text = await fetchPageText(data.url);
     const job = await extractJobWithAI(data.url, text);
@@ -143,7 +143,7 @@ export const evaluateJobUrl = createServerFn({ method: "POST" })
   .validator((d: unknown) => urlInput.parse(d))
   .handler(async ({ data }) => {
     const { requireUserId } = await import("@/lib/session.server");
-        const userId = await requireUserId();
+    const userId = await requireUserId();
 
     const { fetchReadableText } = await import("@/lib/linkfetch.server");
     const { text: pageText, preview } = await fetchReadableText(data.url);

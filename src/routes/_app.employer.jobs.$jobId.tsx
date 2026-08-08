@@ -59,10 +59,7 @@ function JobWorkspace() {
   const [stageOverrides, setStageOverrides] = useState<Record<string, Candidate["status"]>>({});
 
   const pool = useMemo(
-    () =>
-      candidates.filter(
-        (c) => !job || !c.appliedFor || c.appliedFor === job.title,
-      ),
+    () => candidates.filter((c) => !job || !c.appliedFor || c.appliedFor === job.title),
     [candidates, job],
   );
 
@@ -80,7 +77,10 @@ function JobWorkspace() {
           <div className="p-12 text-center text-sm text-muted-foreground">
             {loading ? "Loading role…" : "That requisition no longer exists."}
             <div className="mt-4">
-              <Link to="/employer/jobs" className="text-xs font-semibold text-brand hover:underline">
+              <Link
+                to="/employer/jobs"
+                className="text-xs font-semibold text-brand hover:underline"
+              >
                 Back to all jobs
               </Link>
             </div>

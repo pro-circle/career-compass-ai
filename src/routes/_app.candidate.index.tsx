@@ -80,7 +80,12 @@ function CandidateHome() {
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile label="ATS resume score" value="94" delta="+6" positive />
-        <StatTile label="Active applications" value={String(activeApps.length)} delta="+2" positive />
+        <StatTile
+          label="Active applications"
+          value={String(activeApps.length)}
+          delta="+2"
+          positive
+        />
         <StatTile label="Interview readiness" value="82%" delta="+11%" positive />
         <StatTile label="New matches" value="5" delta="+3" positive />
       </div>
@@ -111,7 +116,17 @@ function CandidateHome() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <SectionCard title="Top matches for you" action={<Link to="/candidate/jobs" className="text-xs font-medium text-accent hover:underline">See all matches</Link>}>
+          <SectionCard
+            title="Top matches for you"
+            action={
+              <Link
+                to="/candidate/jobs"
+                className="text-xs font-medium text-accent hover:underline"
+              >
+                See all matches
+              </Link>
+            }
+          >
             <div className="divide-y divide-border">
               {jobMatches.slice(0, 3).map((m) => (
                 <div key={m.id} className="flex items-center gap-4 p-4">
@@ -125,7 +140,9 @@ function CandidateHome() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Match</div>
+                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Match
+                    </div>
                     <div className="font-mono text-sm font-bold text-accent">{m.matchScore}%</div>
                   </div>
                   <button className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-accent-foreground">
@@ -146,8 +163,8 @@ function CandidateHome() {
               <Sparkles className="size-4 text-accent" />
             </div>
             <p className="text-xs text-background/70">
-              Let the agent scan sources, tailor each application, and apply on your behalf —
-              in review mode it asks first.
+              Let the agent scan sources, tailor each application, and apply on your behalf — in
+              review mode it asks first.
             </p>
             <Link
               to="/candidate/job-hunt"
@@ -172,12 +189,18 @@ function CandidateHome() {
           </SectionCard>
 
           <div className="grid grid-cols-2 gap-3">
-            <Link to="/candidate/resume" className="rounded-xl border border-border bg-card p-4 hover:border-accent/40">
+            <Link
+              to="/candidate/resume"
+              className="rounded-xl border border-border bg-card p-4 hover:border-accent/40"
+            >
               <Wand2 className="size-4 text-accent" />
               <div className="mt-2 text-xs font-bold">Optimize resume</div>
               <div className="text-[10px] text-muted-foreground">Improve ATS score</div>
             </Link>
-            <Link to="/candidate/portfolio" className="rounded-xl border border-border bg-card p-4 hover:border-accent/40">
+            <Link
+              to="/candidate/portfolio"
+              className="rounded-xl border border-border bg-card p-4 hover:border-accent/40"
+            >
               <ImageIcon className="size-4 text-accent" />
               <div className="mt-2 text-xs font-bold">Portfolio</div>
               <div className="text-[10px] text-muted-foreground">Build from templates</div>

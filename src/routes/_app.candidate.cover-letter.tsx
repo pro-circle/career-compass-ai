@@ -12,7 +12,6 @@ export const Route = createFileRoute("/_app/candidate/cover-letter")({
   component: CoverLetter,
 });
 
-
 function CoverLetter() {
   const [role, setRole] = useState("");
   const [company, setCompany] = useState("");

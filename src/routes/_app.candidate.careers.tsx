@@ -91,8 +91,8 @@ function CandidateCareers() {
       ) : filtered.length === 0 ? (
         <SectionCard>
           <div className="p-12 text-center text-sm text-muted-foreground">
-            No open roles right now. Check back soon — new requisitions appear here the
-            moment a recruiter publishes them.
+            No open roles right now. Check back soon — new requisitions appear here the moment a
+            recruiter publishes them.
           </div>
         </SectionCard>
       ) : (

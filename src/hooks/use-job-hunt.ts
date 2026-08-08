@@ -47,41 +47,38 @@ export function useJobHunt() {
     void refresh();
   }, [refresh]);
 
-  const runOnce = useCallback(
-    async (announce = false) => {
-      if (busy.current) return;
-      busy.current = true;
-      setRunning(true);
-      try {
-        const res = await runJobHunt();
-        if (res.applied.length) {
-          setLog((prev) => [...res.applied, ...prev].slice(0, 25));
-          toast.success(
-            res.applied.length === 1
-              ? `Applied to ${res.applied[0].jobTitle} at ${res.applied[0].company}`
-              : `Agent submitted ${res.applied.length} applications`,
-          );
-        }
-        if (res.proposed.length) {
-          setProposals((prev) => [...res.proposed, ...prev]);
-          toast.info(
-            res.proposed.length === 1
-              ? `New match needs your approval: ${res.proposed[0].jobTitle}`
-              : `${res.proposed.length} matches need your approval`,
-          );
-        }
-        if (announce && !res.applied.length && !res.proposed.length) {
-          toast.message(res.message || "No new matches this pass");
-        }
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Agent pass failed");
-      } finally {
-        busy.current = false;
-        setRunning(false);
+  const runOnce = useCallback(async (announce = false) => {
+    if (busy.current) return;
+    busy.current = true;
+    setRunning(true);
+    try {
+      const res = await runJobHunt();
+      if (res.applied.length) {
+        setLog((prev) => [...res.applied, ...prev].slice(0, 25));
+        toast.success(
+          res.applied.length === 1
+            ? `Applied to ${res.applied[0].jobTitle} at ${res.applied[0].company}`
+            : `Agent submitted ${res.applied.length} applications`,
+        );
       }
-    },
-    [],
-  );
+      if (res.proposed.length) {
+        setProposals((prev) => [...res.proposed, ...prev]);
+        toast.info(
+          res.proposed.length === 1
+            ? `New match needs your approval: ${res.proposed[0].jobTitle}`
+            : `${res.proposed.length} matches need your approval`,
+        );
+      }
+      if (announce && !res.applied.length && !res.proposed.length) {
+        toast.message(res.message || "No new matches this pass");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Agent pass failed");
+    } finally {
+      busy.current = false;
+      setRunning(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!settings.enabled) return;

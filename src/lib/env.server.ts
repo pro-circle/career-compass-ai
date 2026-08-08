@@ -51,8 +51,7 @@ function loadDotEnvOnce() {
 
 /** Reads a server-side env var, with a local `.env` fallback in dev. */
 export function serverEnv(name: string): string | undefined {
-  const fromProcess =
-    typeof process !== "undefined" ? process.env?.[name] : undefined;
+  const fromProcess = typeof process !== "undefined" ? process.env?.[name] : undefined;
   if (fromProcess) return fromProcess;
   loadDotEnvOnce();
   return dotenvValues[name];

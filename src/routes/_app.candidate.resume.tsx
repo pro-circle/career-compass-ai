@@ -76,7 +76,15 @@ function ResumeStudio() {
         <div className="grid gap-6 lg:grid-cols-2">
           <SectionCard title="Details">
             <div className="space-y-3 p-5">
-              {["Full name", "Headline", "Location", "Summary", "Experience", "Education", "Skills"].map((f) => (
+              {[
+                "Full name",
+                "Headline",
+                "Location",
+                "Summary",
+                "Experience",
+                "Education",
+                "Skills",
+              ].map((f) => (
                 <div key={f}>
                   <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     {f}
@@ -153,7 +161,14 @@ function ResumeStudio() {
             <div className="p-6 text-center">
               <div className="relative mx-auto grid size-36 place-items-center">
                 <svg className="absolute inset-0" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="42" stroke="var(--surface)" strokeWidth="8" fill="none" />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="42"
+                    stroke="var(--surface)"
+                    strokeWidth="8"
+                    fill="none"
+                  />
                   <circle
                     cx="50"
                     cy="50"
@@ -198,10 +213,26 @@ function ResumeStudio() {
           <SectionCard title="AI recommendations" className="lg:col-span-2">
             <div className="divide-y divide-border">
               {[
-                { done: score >= 96, title: "Add quantifiable impact metrics", body: "Rewrite 3 bullets with numbers (e.g. shipped v2 to 40k users)." },
-                { done: score >= 96, title: "Strengthen keyword density", body: "Add: 'design systems', 'component library', 'a11y'." },
-                { done: true, title: "Fix section ordering", body: "Move 'Experience' above 'Education' for senior roles." },
-                { done: true, title: "Improve action verbs", body: "Replaced 'worked on' with 'shipped', 'led', 'owned'." },
+                {
+                  done: score >= 96,
+                  title: "Add quantifiable impact metrics",
+                  body: "Rewrite 3 bullets with numbers (e.g. shipped v2 to 40k users).",
+                },
+                {
+                  done: score >= 96,
+                  title: "Strengthen keyword density",
+                  body: "Add: 'design systems', 'component library', 'a11y'.",
+                },
+                {
+                  done: true,
+                  title: "Fix section ordering",
+                  body: "Move 'Experience' above 'Education' for senior roles.",
+                },
+                {
+                  done: true,
+                  title: "Improve action verbs",
+                  body: "Replaced 'worked on' with 'shipped', 'led', 'owned'.",
+                },
               ].map((r, i) => (
                 <div key={i} className="flex gap-3 p-4">
                   <div
@@ -210,7 +241,9 @@ function ResumeStudio() {
                     {r.done ? <Check className="size-3" /> : <Sparkles className="size-3" />}
                   </div>
                   <div>
-                    <div className={`text-sm font-semibold ${r.done ? "line-through decoration-accent/50" : ""}`}>
+                    <div
+                      className={`text-sm font-semibold ${r.done ? "line-through decoration-accent/50" : ""}`}
+                    >
                       {r.title}
                     </div>
                     <div className="text-xs text-muted-foreground">{r.body}</div>

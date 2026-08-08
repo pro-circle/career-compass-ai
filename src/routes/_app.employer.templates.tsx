@@ -106,7 +106,9 @@ function TemplatesPage() {
             <div className="flex items-center gap-2 rounded-lg border border-brand/20 bg-brand/5 p-3 text-xs">
               <Sparkles className="size-3.5 text-brand" />
               <span>
-                Variables like <code className="rounded bg-card px-1.5 py-0.5 font-mono text-[10px]">{`{{firstName}}`}</code> are auto-filled from candidate profiles.
+                Variables like{" "}
+                <code className="rounded bg-card px-1.5 py-0.5 font-mono text-[10px]">{`{{firstName}}`}</code>{" "}
+                are auto-filled from candidate profiles.
               </span>
             </div>
 

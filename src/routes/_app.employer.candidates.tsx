@@ -34,7 +34,7 @@ function CandidatesPage() {
 
   function toggle(id: string) {
     setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 3 ? [...prev, id] : prev
+      prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 3 ? [...prev, id] : prev,
     );
   }
 
@@ -101,7 +101,10 @@ function CandidatesPage() {
       <SectionCard>
         <div className="divide-y divide-border">
           {filtered.map((c) => (
-            <div key={c.id} className="flex items-center gap-4 p-4 transition-colors hover:bg-surface/40">
+            <div
+              key={c.id}
+              className="flex items-center gap-4 p-4 transition-colors hover:bg-surface/40"
+            >
               <input
                 type="checkbox"
                 checked={selected.includes(c.id)}
@@ -146,7 +149,9 @@ function CandidatesPage() {
                 <Avatar initials={detail.initials} size="lg" />
                 <div>
                   <div className="font-display text-lg font-bold">{detail.name}</div>
-                  <div className="text-xs text-muted-foreground">{detail.title} · {detail.company}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {detail.title} · {detail.company}
+                  </div>
                 </div>
               </div>
               <button onClick={() => setDetail(null)} className="text-muted-foreground">
@@ -154,7 +159,9 @@ function CandidatesPage() {
               </button>
             </div>
             <div className="mb-6 flex items-center gap-3 rounded-lg bg-surface p-4">
-              <div className={`grid size-14 place-items-center rounded-xl font-mono text-lg font-bold ${detail.matchScore >= 95 ? "bg-accent text-accent-foreground" : "bg-brand text-brand-foreground"}`}>
+              <div
+                className={`grid size-14 place-items-center rounded-xl font-mono text-lg font-bold ${detail.matchScore >= 95 ? "bg-accent text-accent-foreground" : "bg-brand text-brand-foreground"}`}
+              >
                 {detail.matchScore}
               </div>
               <div>
@@ -162,7 +169,11 @@ function CandidatesPage() {
                   Neural match
                 </div>
                 <div className="text-sm font-semibold">
-                  {detail.matchScore >= 95 ? "Elite fit" : detail.matchScore >= 80 ? "Strong fit" : "Fair fit"}
+                  {detail.matchScore >= 95
+                    ? "Elite fit"
+                    : detail.matchScore >= 80
+                      ? "Strong fit"
+                      : "Fair fit"}
                 </div>
               </div>
               <StatusPill status={detail.status} />
@@ -182,7 +193,10 @@ function CandidatesPage() {
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {detail.skills.map((s) => (
-                    <span key={s} className="rounded bg-surface px-2 py-1 text-[11px] font-medium ring-1 ring-border">
+                    <span
+                      key={s}
+                      className="rounded bg-surface px-2 py-1 text-[11px] font-medium ring-1 ring-border"
+                    >
                       {s}
                     </span>
                   ))}
@@ -191,7 +205,9 @@ function CandidatesPage() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-accent">Strengths</div>
+                  <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-accent">
+                    Strengths
+                  </div>
                   <ul className="space-y-1 text-xs text-foreground/80">
                     {detail.strengths.map((s) => (
                       <li key={s} className="flex gap-2">
@@ -201,7 +217,9 @@ function CandidatesPage() {
                   </ul>
                 </div>
                 <div>
-                  <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-amber-600">Potential gaps</div>
+                  <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-amber-600">
+                    Potential gaps
+                  </div>
                   <ul className="space-y-1 text-xs text-foreground/80">
                     {detail.gaps.map((g) => (
                       <li key={g}>· {g}</li>
@@ -246,15 +264,21 @@ function CandidatesPage() {
           <div className="w-full max-w-4xl overflow-y-auto bg-card p-6 shadow-2xl">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-brand">Compare</div>
-                <h2 className="font-display text-2xl font-bold">Side-by-side ({compareList.length})</h2>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-brand">
+                  Compare
+                </div>
+                <h2 className="font-display text-2xl font-bold">
+                  Side-by-side ({compareList.length})
+                </h2>
               </div>
               <button onClick={() => setCompareOpen(false)} className="text-muted-foreground">
                 <X className="size-4" />
               </button>
             </div>
 
-            <div className={`grid gap-4 ${compareList.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
+            <div
+              className={`grid gap-4 ${compareList.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}
+            >
               {compareList.map((c) => (
                 <div key={c.id} className="rounded-xl border border-border bg-surface/40 p-5">
                   <div className="mb-4 flex items-center gap-3">
@@ -264,16 +288,23 @@ function CandidatesPage() {
                       <div className="truncate text-[10px] text-muted-foreground">{c.company}</div>
                     </div>
                   </div>
-                  <div className={`mb-4 grid size-16 place-items-center rounded-xl font-mono text-lg font-bold ${c.matchScore >= 95 ? "bg-accent text-accent-foreground" : "bg-brand text-brand-foreground"}`}>
+                  <div
+                    className={`mb-4 grid size-16 place-items-center rounded-xl font-mono text-lg font-bold ${c.matchScore >= 95 ? "bg-accent text-accent-foreground" : "bg-brand text-brand-foreground"}`}
+                  >
                     {c.matchScore}
                   </div>
                   <div className="space-y-3 text-xs">
                     <Row label="Years">{c.years}y</Row>
-                    <Row label="Status"><StatusPill status={c.status} /></Row>
+                    <Row label="Status">
+                      <StatusPill status={c.status} />
+                    </Row>
                     <Row label="Skills">
                       <div className="flex flex-wrap gap-1">
                         {c.skills.slice(0, 4).map((s) => (
-                          <span key={s} className="rounded bg-card px-1.5 py-0.5 text-[10px] ring-1 ring-border">
+                          <span
+                            key={s}
+                            className="rounded bg-card px-1.5 py-0.5 text-[10px] ring-1 ring-border"
+                          >
                             {s}
                           </span>
                         ))}
@@ -282,14 +313,18 @@ function CandidatesPage() {
                     <Row label="Strengths">
                       <ul className="space-y-0.5">
                         {c.strengths.slice(0, 2).map((s) => (
-                          <li key={s} className="text-foreground/80">· {s}</li>
+                          <li key={s} className="text-foreground/80">
+                            · {s}
+                          </li>
                         ))}
                       </ul>
                     </Row>
                     <Row label="Gaps">
                       <ul className="space-y-0.5">
                         {c.gaps.slice(0, 2).map((g) => (
-                          <li key={g} className="text-foreground/80">· {g}</li>
+                          <li key={g} className="text-foreground/80">
+                            · {g}
+                          </li>
                         ))}
                       </ul>
                     </Row>
@@ -303,9 +338,9 @@ function CandidatesPage() {
                 AI hiring recommendation
               </div>
               <p className="text-sm">
-                <strong className="text-accent">{compareList[0]?.name}</strong> ranks highest
-                on match score and shows the strongest signal for design-systems leadership.
-                We recommend advancing them to a final panel first.
+                <strong className="text-accent">{compareList[0]?.name}</strong> ranks highest on
+                match score and shows the strongest signal for design-systems leadership. We
+                recommend advancing them to a final panel first.
               </p>
             </div>
           </div>

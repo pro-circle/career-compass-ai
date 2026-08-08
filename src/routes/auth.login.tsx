@@ -56,7 +56,9 @@ function LoginPage() {
       <ThemeToggle className="fixed right-4 top-4 z-50 bg-background/80 backdrop-blur" />
       <aside className="relative hidden overflow-hidden bg-foreground p-12 text-background lg:flex lg:flex-col lg:justify-between">
         <a href="/" className="inline-flex items-center gap-2 font-display text-lg font-extrabold">
-          <span className="grid size-8 place-items-center rounded-lg bg-brand text-brand-foreground">A</span>
+          <span className="grid size-8 place-items-center rounded-lg bg-brand text-brand-foreground">
+            A
+          </span>
           ATS ENGINE
         </a>
         <div className="relative z-10 max-w-md">
@@ -78,12 +80,16 @@ function LoginPage() {
         <div className="w-full max-w-sm">
           <div className="mb-6">
             <h1 className="font-display text-2xl font-extrabold">Welcome back</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Sign in to continue to your workspace.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Sign in to continue to your workspace.
+            </p>
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-foreground/80">Work email</span>
+              <span className="mb-1.5 block text-xs font-semibold text-foreground/80">
+                Work email
+              </span>
               <div className="relative">
                 <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -98,7 +104,9 @@ function LoginPage() {
             </label>
 
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-foreground/80">Password</span>
+              <span className="mb-1.5 block text-xs font-semibold text-foreground/80">
+                Password
+              </span>
               <div className="relative">
                 <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -116,7 +124,13 @@ function LoginPage() {
               disabled={busy}
               className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-brand py-2.5 text-sm font-semibold text-brand-foreground hover:opacity-90 disabled:opacity-60"
             >
-              {busy ? "Signing in…" : (<>Sign in <ArrowRight className="size-4" /></>)}
+              {busy ? (
+                "Signing in…"
+              ) : (
+                <>
+                  Sign in <ArrowRight className="size-4" />
+                </>
+              )}
             </button>
           </form>
 

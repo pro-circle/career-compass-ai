@@ -13,13 +13,7 @@ export type Candidate = {
   skills: string[];
   strengths: string[];
   gaps: string[];
-  status:
-    | "New"
-    | "Screening"
-    | "Interviewing"
-    | "Final Round"
-    | "Offer"
-    | "Rejected";
+  status: "New" | "Screening" | "Interviewing" | "Final Round" | "Offer" | "Rejected";
   appliedFor: string;
   aiInsight: string;
   portfolio: { label: string; url: string }[];

@@ -14,17 +14,14 @@ const signupInput = credentials.extend({
 export const login = createServerFn({ method: "POST" })
   .validator((data: unknown) => credentials.parse(data))
   .handler(async ({ data }) => {
-    const { getSupabaseAuthClient, ensureProfile } = await import(
-      "@/lib/auth.server"
-    );
+    const { getSupabaseAuthClient, ensureProfile } = await import("@/lib/auth.server");
     const { getAppSession } = await import("@/lib/session.server");
 
     const auth = getSupabaseAuthClient();
     if (!auth) {
       return {
         ok: false as const,
-        error:
-          "Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.",
+        error: "Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.",
       };
     }
 
@@ -57,17 +54,14 @@ export const login = createServerFn({ method: "POST" })
 export const signup = createServerFn({ method: "POST" })
   .validator((data: unknown) => signupInput.parse(data))
   .handler(async ({ data }) => {
-    const { getSupabaseAuthClient, ensureProfile } = await import(
-      "@/lib/auth.server"
-    );
+    const { getSupabaseAuthClient, ensureProfile } = await import("@/lib/auth.server");
     const { getAppSession } = await import("@/lib/session.server");
 
     const auth = getSupabaseAuthClient();
     if (!auth) {
       return {
         ok: false as const,
-        error:
-          "Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.",
+        error: "Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.",
       };
     }
 
@@ -84,12 +78,7 @@ export const signup = createServerFn({ method: "POST" })
       };
     }
 
-    const profile = await ensureProfile(
-      res.user.id,
-      data.role,
-      data.fullName,
-      data.email,
-    );
+    const profile = await ensureProfile(res.user.id, data.role, data.fullName, data.email);
 
     if (!res.session) {
       return {
@@ -115,24 +104,20 @@ export const logout = createServerFn({ method: "POST" }).handler(async () => {
   return { ok: true as const };
 });
 
-export const getCurrentSession = createServerFn({ method: "GET" }).handler(
-  async () => {
-    try {
-      const { getAppSession } = await import("@/lib/session.server");
-      const session = await getAppSession();
-      return session.data;
-    } catch (error) {
-      console.error("[auth] failed to read session", error);
-      return {} as Record<string, never>;
-    }
-  },
-);
-
-export const markOnboarded = createServerFn({ method: "POST" }).handler(
-  async () => {
+export const getCurrentSession = createServerFn({ method: "GET" }).handler(async () => {
+  try {
     const { getAppSession } = await import("@/lib/session.server");
     const session = await getAppSession();
-    await session.update({ ...session.data, onboarded: true });
-    return { ok: true as const };
-  },
-);
+    return session.data;
+  } catch (error) {
+    console.error("[auth] failed to read session", error);
+    return {} as Record<string, never>;
+  }
+});
+
+export const markOnboarded = createServerFn({ method: "POST" }).handler(async () => {
+  const { getAppSession } = await import("@/lib/session.server");
+  const session = await getAppSession();
+  await session.update({ ...session.data, onboarded: true });
+  return { ok: true as const };
+});

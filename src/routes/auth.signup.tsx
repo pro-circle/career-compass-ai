@@ -55,7 +55,9 @@ function SignupPage() {
       <ThemeToggle className="fixed right-4 top-4 z-50 bg-background/80 backdrop-blur" />
       <aside className="relative hidden overflow-hidden bg-foreground p-12 text-background lg:flex lg:flex-col lg:justify-between">
         <a href="/" className="inline-flex items-center gap-2 font-display text-lg font-extrabold">
-          <span className="grid size-8 place-items-center rounded-lg bg-brand text-brand-foreground">A</span>
+          <span className="grid size-8 place-items-center rounded-lg bg-brand text-brand-foreground">
+            A
+          </span>
           ATS ENGINE
         </a>
         <div className="relative z-10 max-w-md space-y-6">
@@ -63,7 +65,12 @@ function SignupPage() {
             Start your <span className="text-accent">14-day trial</span>. No card required.
           </h2>
           <ul className="space-y-3 text-sm text-background/80">
-            {["Unlimited AI matching", "Instant resume + interview intelligence", "Careers page in one click", "SOC 2 + GDPR ready"].map((t) => (
+            {[
+              "Unlimited AI matching",
+              "Instant resume + interview intelligence",
+              "Careers page in one click",
+              "SOC 2 + GDPR ready",
+            ].map((t) => (
               <li key={t} className="flex items-center gap-2">
                 <Check className="size-4 text-accent" /> {t}
               </li>
@@ -98,9 +105,29 @@ function SignupPage() {
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
-            <Field icon={User} label="Full name" placeholder="Jane Doe" value={fullName} onChange={setFullName} />
-            <Field icon={Mail} label="Work email" type="email" placeholder="you@company.com" value={email} onChange={setEmail} />
-            <Field icon={Lock} label="Password" type="password" placeholder="At least 8 characters" value={password} onChange={setPassword} />
+            <Field
+              icon={User}
+              label="Full name"
+              placeholder="Jane Doe"
+              value={fullName}
+              onChange={setFullName}
+            />
+            <Field
+              icon={Mail}
+              label="Work email"
+              type="email"
+              placeholder="you@company.com"
+              value={email}
+              onChange={setEmail}
+            />
+            <Field
+              icon={Lock}
+              label="Password"
+              type="password"
+              placeholder="At least 8 characters"
+              value={password}
+              onChange={setPassword}
+            />
 
             <label className="flex items-start gap-2 text-xs text-muted-foreground">
               <input type="checkbox" defaultChecked className="mt-0.5 accent-brand" />
@@ -112,7 +139,13 @@ function SignupPage() {
               disabled={busy}
               className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-brand py-2.5 text-sm font-semibold text-brand-foreground hover:opacity-90 disabled:opacity-60"
             >
-              {busy ? "Creating…" : (<>Create account <ArrowRight className="size-4" /></>)}
+              {busy ? (
+                "Creating…"
+              ) : (
+                <>
+                  Create account <ArrowRight className="size-4" />
+                </>
+              )}
             </button>
           </form>
 

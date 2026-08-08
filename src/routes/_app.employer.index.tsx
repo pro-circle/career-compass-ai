@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/routes/_app";
-import { Avatar, ScoreBar, SectionCard, StatTile, StatusPill } from "@/components/dashboard/primitives";
+import {
+  Avatar,
+  ScoreBar,
+  SectionCard,
+  StatTile,
+  StatusPill,
+} from "@/components/dashboard/primitives";
 import { useDataset } from "@/hooks/use-dataset";
 import { ArrowRight, Plus, Sparkles, TrendingUp } from "lucide-react";
 
@@ -103,14 +109,20 @@ function EmployerDashboard() {
           <SectionCard
             title="Top ranked candidates (all roles)"
             action={
-              <Link to="/employer/candidates" className="text-xs font-medium text-brand hover:underline">
+              <Link
+                to="/employer/candidates"
+                className="text-xs font-medium text-brand hover:underline"
+              >
                 Compare top 3
               </Link>
             }
           >
             <div className="divide-y divide-border">
               {topCandidates.map((c) => (
-                <div key={c.id} className="flex items-center gap-4 p-4 transition-colors hover:bg-surface/30">
+                <div
+                  key={c.id}
+                  className="flex items-center gap-4 p-4 transition-colors hover:bg-surface/30"
+                >
                   <Avatar initials={c.initials} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
@@ -132,8 +144,12 @@ function EmployerDashboard() {
                     ))}
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Match</div>
-                    <div className={`font-mono text-sm font-bold ${c.matchScore >= 95 ? "text-accent" : "text-brand"}`}>
+                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Match
+                    </div>
+                    <div
+                      className={`font-mono text-sm font-bold ${c.matchScore >= 95 ? "text-accent" : "text-brand"}`}
+                    >
                       {c.matchScore}%
                     </div>
                   </div>

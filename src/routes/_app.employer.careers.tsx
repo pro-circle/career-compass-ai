@@ -49,7 +49,11 @@ function CareersPage() {
               device === d ? "bg-brand text-brand-foreground" : "text-muted-foreground"
             }`}
           >
-            {d === "desktop" ? <Monitor className="size-3.5" /> : <Smartphone className="size-3.5" />}
+            {d === "desktop" ? (
+              <Monitor className="size-3.5" />
+            ) : (
+              <Smartphone className="size-3.5" />
+            )}
             {d}
           </button>
         ))}
@@ -82,11 +86,16 @@ function CareersPage() {
                   Build the future of <span className="text-accent">work</span> with us.
                 </h1>
                 <p className="mt-4 max-w-xl text-sm text-background/70">
-                  ATS Engine is a distributed team of designers, engineers, and researchers rewriting how teams hire and grow.
+                  ATS Engine is a distributed team of designers, engineers, and researchers
+                  rewriting how teams hire and grow.
                 </p>
                 <div className="mt-6 flex gap-3">
-                  <div className="rounded-md bg-brand px-4 py-2 text-xs font-semibold text-brand-foreground">See open roles</div>
-                  <div className="rounded-md border border-white/20 px-4 py-2 text-xs font-semibold text-background">Our values</div>
+                  <div className="rounded-md bg-brand px-4 py-2 text-xs font-semibold text-brand-foreground">
+                    See open roles
+                  </div>
+                  <div className="rounded-md border border-white/20 px-4 py-2 text-xs font-semibold text-background">
+                    Our values
+                  </div>
                 </div>
               </div>
               <div className="pointer-events-none absolute -right-20 -top-20 size-80 rounded-full bg-brand/40 blur-3xl" />
@@ -102,14 +111,18 @@ function CareersPage() {
               ].map((s) => (
                 <div key={s.v} className="p-5 text-center">
                   <div className="font-display text-2xl font-extrabold">{s.k}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{s.v}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    {s.v}
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* Openings */}
             <div className="p-8">
-              <h2 className="mb-5 font-display text-xl font-extrabold">Open positions ({openJobs.length})</h2>
+              <h2 className="mb-5 font-display text-xl font-extrabold">
+                Open positions ({openJobs.length})
+              </h2>
               <div className="divide-y divide-border rounded-lg border border-border">
                 {openJobs.slice(0, 6).map((j) => (
                   <div key={j.id} className="flex items-center justify-between gap-4 p-4">

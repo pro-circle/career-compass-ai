@@ -2,7 +2,19 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/routes/_app";
 import { SectionCard } from "@/components/dashboard/primitives";
-import { User, Bell, CreditCard, Users2, Shield, Save, Sun, Moon, Monitor, SlidersHorizontal, MessagesSquare } from "lucide-react";
+import {
+  User,
+  Bell,
+  CreditCard,
+  Users2,
+  Shield,
+  Save,
+  Sun,
+  Moon,
+  Monitor,
+  SlidersHorizontal,
+  MessagesSquare,
+} from "lucide-react";
 import { toast } from "sonner";
 import { getStoredTheme, setTheme as persistTheme, applyTheme, type Theme } from "@/lib/theme";
 import { usePrefs } from "@/hooks/use-prefs";
@@ -87,9 +99,14 @@ function ProfileTab() {
         className="space-y-5 p-6"
       >
         <div className="flex items-center gap-4">
-          <div className="grid size-16 place-items-center rounded-full bg-brand/15 text-lg font-bold text-brand">JD</div>
+          <div className="grid size-16 place-items-center rounded-full bg-brand/15 text-lg font-bold text-brand">
+            JD
+          </div>
           <div>
-            <button type="button" className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-semibold hover:bg-surface">
+            <button
+              type="button"
+              className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-semibold hover:bg-surface"
+            >
               Upload photo
             </button>
             <p className="mt-1 text-[10px] text-muted-foreground">PNG or JPG, up to 2MB.</p>
@@ -121,7 +138,12 @@ function AppearanceTab() {
     applyTheme(t);
   }, []);
 
-  const options: { id: Theme; label: string; desc: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  const options: {
+    id: Theme;
+    label: string;
+    desc: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }[] = [
     { id: "light", label: "Light", desc: "Always use the light theme.", icon: Sun },
     { id: "dark", label: "Dark", desc: "Always use the dark theme.", icon: Moon },
     {
@@ -136,8 +158,8 @@ function AppearanceTab() {
     <SectionCard title="Appearance">
       <div className="p-6">
         <p className="mb-5 text-xs text-muted-foreground">
-          New sessions follow your operating-system setting until you pick an explicit
-          preference here. Your choice is remembered on this device.
+          New sessions follow your operating-system setting until you pick an explicit preference
+          here. Your choice is remembered on this device.
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
           {options.map((o) => {
@@ -156,7 +178,9 @@ function AppearanceTab() {
                     : "border-border bg-card hover:border-brand/40"
                 }`}
               >
-                <o.icon className={`mb-2 size-5 ${active ? "text-brand" : "text-muted-foreground"}`} />
+                <o.icon
+                  className={`mb-2 size-5 ${active ? "text-brand" : "text-muted-foreground"}`}
+                />
                 <div className="text-sm font-semibold">{o.label}</div>
                 <p className="mt-1 text-[11px] text-muted-foreground">{o.desc}</p>
               </button>
@@ -168,7 +192,15 @@ function AppearanceTab() {
   );
 }
 
-function Switch({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
+function Switch({
+  on,
+  onChange,
+  label,
+}: {
+  on: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+}) {
   return (
     <button
       type="button"
@@ -196,8 +228,8 @@ function FeaturesTab({ isCandidate }: { isCandidate: boolean }) {
       <SectionCard title="Sidebar features">
         <div className="divide-y divide-border">
           <div className="px-6 py-4 text-xs text-muted-foreground">
-            Keep only the features you use. Hidden items disappear from the sidebar — their
-            pages stay reachable by URL. Dashboard and Settings are always available.
+            Keep only the features you use. Hidden items disappear from the sidebar — their pages
+            stay reachable by URL. Dashboard and Settings are always available.
           </div>
           {groups.map((g) => (
             <div key={g.label} className="p-5">
@@ -209,7 +241,10 @@ function FeaturesTab({ isCandidate }: { isCandidate: boolean }) {
                   const locked = !!item.locked;
                   const visible = locked || !hiddenNav.includes(item.to);
                   return (
-                    <div key={item.to} className="flex items-center gap-3 rounded-md bg-surface px-3 py-2">
+                    <div
+                      key={item.to}
+                      className="flex items-center gap-3 rounded-md bg-surface px-3 py-2"
+                    >
                       <item.icon className="size-4 text-muted-foreground" />
                       <span className="flex-1 text-sm font-medium">{item.label}</span>
                       {locked ? (
@@ -239,8 +274,8 @@ function FeaturesTab({ isCandidate }: { isCandidate: boolean }) {
             <div className="flex-1">
               <div className="text-sm font-semibold">Floating assistant bubble</div>
               <div className="text-xs text-muted-foreground">
-                Show a chat bubble in the corner of every page so you can ask the assistant
-                without leaving what you are doing.
+                Show a chat bubble in the corner of every page so you can ask the assistant without
+                leaving what you are doing.
               </div>
             </div>
             <Switch
@@ -260,8 +295,16 @@ function FeaturesTab({ isCandidate }: { isCandidate: boolean }) {
 
 function NotificationsTab() {
   const items = [
-    { label: "New candidate matches", desc: "Get notified when a top-tier candidate applies.", channels: ["email", "push"] },
-    { label: "Interview reminders", desc: "1 hour before scheduled interviews.", channels: ["email", "push", "sms"] },
+    {
+      label: "New candidate matches",
+      desc: "Get notified when a top-tier candidate applies.",
+      channels: ["email", "push"],
+    },
+    {
+      label: "Interview reminders",
+      desc: "1 hour before scheduled interviews.",
+      channels: ["email", "push", "sms"],
+    },
     { label: "Weekly analytics digest", desc: "Every Monday at 9am.", channels: ["email"] },
     { label: "Product updates", desc: "New features and improvements.", channels: ["email"] },
   ];
@@ -281,7 +324,9 @@ function NotificationsTab() {
                   <span
                     key={c}
                     className={`rounded px-2 py-1 text-[10px] font-bold uppercase tracking-widest ring-1 ${
-                      on ? "bg-brand/10 text-brand ring-brand/20" : "bg-surface text-muted-foreground ring-border"
+                      on
+                        ? "bg-brand/10 text-brand ring-brand/20"
+                        : "bg-surface text-muted-foreground ring-border"
                     }`}
                   >
                     {c}
@@ -307,9 +352,13 @@ function BillingTab() {
       <SectionCard title="Current plan">
         <div className="flex flex-wrap items-center justify-between gap-4 p-6">
           <div>
-            <div className="text-xs font-bold uppercase tracking-widest text-brand">Growth · Annual</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-brand">
+              Growth · Annual
+            </div>
             <div className="mt-1 font-display text-2xl font-extrabold">$4,800 / year</div>
-            <div className="text-xs text-muted-foreground">Renews Mar 12, 2027 · 12 seats included</div>
+            <div className="text-xs text-muted-foreground">
+              Renews Mar 12, 2027 · 12 seats included
+            </div>
           </div>
           <div className="flex gap-2">
             <button className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold hover:bg-surface">
@@ -324,12 +373,16 @@ function BillingTab() {
 
       <SectionCard title="Payment method">
         <div className="flex items-center gap-4 p-6">
-          <div className="grid size-12 place-items-center rounded-lg bg-foreground text-xs font-bold text-background">VISA</div>
+          <div className="grid size-12 place-items-center rounded-lg bg-foreground text-xs font-bold text-background">
+            VISA
+          </div>
           <div className="flex-1">
             <div className="text-sm font-semibold">Visa ending 4242</div>
             <div className="text-xs text-muted-foreground">Expires 08/28</div>
           </div>
-          <button className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold hover:bg-surface">Update</button>
+          <button className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold hover:bg-surface">
+            Update
+          </button>
         </div>
       </SectionCard>
 
@@ -353,7 +406,11 @@ function BillingTab() {
                 <td className="px-5 py-3 font-mono text-xs">{i.id}</td>
                 <td className="px-5 py-3 text-xs text-muted-foreground">{i.date}</td>
                 <td className="px-5 py-3 font-semibold">{i.amt}</td>
-                <td className="px-5 py-3 text-right"><button className="text-xs font-medium text-brand hover:underline">Download</button></td>
+                <td className="px-5 py-3 text-right">
+                  <button className="text-xs font-medium text-brand hover:underline">
+                    Download
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -393,7 +450,10 @@ function TeamTab() {
               <div className="text-sm font-semibold">{m.name}</div>
               <div className="text-xs text-muted-foreground">{m.email}</div>
             </div>
-            <select className="rounded-md border border-border bg-card px-2 py-1 text-xs font-semibold" defaultValue={m.role}>
+            <select
+              className="rounded-md border border-border bg-card px-2 py-1 text-xs font-semibold"
+              defaultValue={m.role}
+            >
               <option>Owner</option>
               <option>Admin</option>
               <option>Recruiter</option>
@@ -429,7 +489,9 @@ function SecurityTab() {
         <div className="flex items-center justify-between gap-4 p-6">
           <div>
             <div className="text-sm font-semibold">Authenticator app</div>
-            <div className="text-xs text-muted-foreground">Use Google Authenticator or 1Password.</div>
+            <div className="text-xs text-muted-foreground">
+              Use Google Authenticator or 1Password.
+            </div>
           </div>
           <span className="rounded bg-accent/10 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-accent ring-1 ring-accent/20">
             Enabled
@@ -446,9 +508,13 @@ function SecurityTab() {
             <div key={s.device} className="flex items-center justify-between p-4">
               <div>
                 <div className="text-sm font-semibold">{s.device}</div>
-                <div className="text-xs text-muted-foreground">{s.loc} · {s.when}</div>
+                <div className="text-xs text-muted-foreground">
+                  {s.loc} · {s.when}
+                </div>
               </div>
-              <button className="text-xs font-medium text-destructive hover:underline">Revoke</button>
+              <button className="text-xs font-medium text-destructive hover:underline">
+                Revoke
+              </button>
             </div>
           ))}
         </div>
@@ -457,7 +523,15 @@ function SecurityTab() {
   );
 }
 
-function Input({ label, type = "text", defaultValue }: { label: string; type?: string; defaultValue?: string }) {
+function Input({
+  label,
+  type = "text",
+  defaultValue,
+}: {
+  label: string;
+  type?: string;
+  defaultValue?: string;
+}) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-xs font-semibold text-foreground/80">{label}</span>

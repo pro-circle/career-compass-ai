@@ -139,8 +139,7 @@ export async function fetchReadableText(
     finalUrl: current,
     siteName: meta(html, "og:site_name") || host,
     title: meta(html, "og:title") || decode(rawTitle) || host,
-    description:
-      meta(html, "og:description") || meta(html, "description") || "",
+    description: meta(html, "og:description") || meta(html, "description") || "",
     image: image ? absolute(current, image) : "",
     favicon: absolute(current, icon),
   };

@@ -80,7 +80,6 @@ export function useDataset(): Dataset & { loading: boolean } {
             unread: true,
           })),
         });
-
       } catch {
         if (!cancelled) setLive(EMPTY_DATASET);
       } finally {

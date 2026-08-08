@@ -32,9 +32,7 @@ export async function ensureProfile(
   fullName: string,
   email: string,
 ): Promise<{ role: AuthRole; onboarded: boolean }> {
-  const { getSupabaseAdmin } = await import(
-    "@/integrations/supabase/client.server"
-  );
+  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
   const db = getSupabaseAdmin();
   if (!db) return { role, onboarded: role === "employer" };
 

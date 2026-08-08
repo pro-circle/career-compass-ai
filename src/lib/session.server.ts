@@ -9,19 +9,15 @@ export type AppSession = {
   onboarded?: boolean;
 };
 
-
 // Fallback keeps dev/preview working when SESSION_SECRET isn't injected yet.
 // Cookies are still encrypted; set SESSION_SECRET in production for stability.
-const FALLBACK_SESSION_SECRET =
-  "ats-engine-dev-session-secret-please-set-SESSION_SECRET-env-0001";
+const FALLBACK_SESSION_SECRET = "ats-engine-dev-session-secret-please-set-SESSION_SECRET-env-0001";
 
 export function sessionConfig() {
   const env = process.env.SESSION_SECRET;
   const password = env && env.length >= 32 ? env : FALLBACK_SESSION_SECRET;
   if (password === FALLBACK_SESSION_SECRET) {
-    console.warn(
-      "[session] SESSION_SECRET missing or too short — using dev fallback.",
-    );
+    console.warn("[session] SESSION_SECRET missing or too short — using dev fallback.");
   }
   return {
     password,
@@ -35,7 +31,6 @@ export function sessionConfig() {
     },
   };
 }
-
 
 export async function getAppSession() {
   return useSession<AppSession>(sessionConfig());

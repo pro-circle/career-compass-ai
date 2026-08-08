@@ -25,9 +25,7 @@ const DEFAULTS: AutoApplySettings = {
 
 async function ctx() {
   const { requireUserId } = await import("@/lib/session.server");
-  const { getSupabaseAdmin } = await import(
-    "@/integrations/supabase/client.server"
-  );
+  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
   return {
     userId: await requireUserId(),
     db: getSupabaseAdmin(),
@@ -149,9 +147,7 @@ export const runAutoApply = createServerFn({ method: "POST" }).handler(
       .select("job_title,company")
       .eq("user_id", userId);
     const seen = new Set(
-      ((existing ?? []) as any[]).map(
-        (a) => `${a.job_title}|${a.company}`.toLowerCase(),
-      ),
+      ((existing ?? []) as any[]).map((a) => `${a.job_title}|${a.company}`.toLowerCase()),
     );
 
     const applied: AutoApplyLogEntry[] = [];

@@ -61,9 +61,7 @@ export function useAutoApplyAgent() {
         );
       }
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Auto-apply pass failed",
-      );
+      toast.error(err instanceof Error ? err.message : "Auto-apply pass failed");
     } finally {
       busy.current = false;
       setRunning(false);
@@ -92,9 +90,7 @@ export function useAutoApplyAgent() {
         }
       } catch (err) {
         setSettings(settings);
-        toast.error(
-          err instanceof Error ? err.message : "Could not save settings",
-        );
+        toast.error(err instanceof Error ? err.message : "Could not save settings");
       }
     },
     [settings],

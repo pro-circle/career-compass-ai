@@ -3,9 +3,7 @@ import { z } from "zod";
 import type { Job } from "./types";
 
 async function db() {
-  const { getSupabaseAdmin } = await import(
-    "@/integrations/supabase/client.server"
-  );
+  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
   return getSupabaseAdmin();
 }
 
@@ -28,18 +26,16 @@ function rowToJob(r: any): Job {
 }
 
 /** Every open requisition posted through this ATS, for the candidate careers page. */
-export const listOpenJobs = createServerFn({ method: "GET" }).handler(
-  async (): Promise<Job[]> => {
-    const client = await db();
-    if (!client) return [];
-    const { data } = await client
-      .from("jobs")
-      .select("*")
-      .eq("status", "Open")
-      .order("posted_at", { ascending: false });
-    return (data ?? []).map(rowToJob);
-  },
-);
+export const listOpenJobs = createServerFn({ method: "GET" }).handler(async (): Promise<Job[]> => {
+  const client = await db();
+  if (!client) return [];
+  const { data } = await client
+    .from("jobs")
+    .select("*")
+    .eq("status", "Open")
+    .order("posted_at", { ascending: false });
+  return (data ?? []).map(rowToJob);
+});
 
 /** Public read for the shareable job link. */
 export const getPublicJob = createServerFn({ method: "GET" })
@@ -47,11 +43,7 @@ export const getPublicJob = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<Job | null> => {
     const client = await db();
     if (!client) return null;
-    const { data: row } = await client
-      .from("jobs")
-      .select("*")
-      .eq("id", data.id)
-      .maybeSingle();
+    const { data: row } = await client.from("jobs").select("*").eq("id", data.id).maybeSingle();
     return row ? rowToJob(row) : null;
   });
 
@@ -72,7 +64,7 @@ export const createJob = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { requireUserId } = await import("@/lib/session.server");
-        const employerId = await requireUserId();
+    const employerId = await requireUserId();
     const id = `JOB-${Date.now().toString(36).toUpperCase()}`;
     const client = await db();
     if (client) {
@@ -110,17 +102,13 @@ export const applyToJob = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { requireUserId } = await import("@/lib/session.server");
-        const userId = await requireUserId();
+    const userId = await requireUserId();
     const client = await db();
     if (!client) {
       return { ok: false as const, message: "Backend not configured." };
     }
 
-    const { data: job } = await client
-      .from("jobs")
-      .select("*")
-      .eq("id", data.jobId)
-      .maybeSingle();
+    const { data: job } = await client.from("jobs").select("*").eq("id", data.jobId).maybeSingle();
     if (!job) return { ok: false as const, message: "Job not found." };
 
     const { data: dupe } = await client

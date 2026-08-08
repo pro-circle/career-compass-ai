@@ -59,9 +59,7 @@ function groqModel(key: string): LanguageModel {
 }
 
 export function geminiKey(): string | undefined {
-  return (
-    serverEnv("GEMINI_API_KEY") || serverEnv("GOOGLE_GENERATIVE_AI_API_KEY")
-  );
+  return serverEnv("GEMINI_API_KEY") || serverEnv("GOOGLE_GENERATIVE_AI_API_KEY");
 }
 
 export function geminiModel(): LanguageModel | null {
@@ -114,10 +112,29 @@ export function primaryModel(): Attempt {
 }
 
 const LIVE_HINTS = [
-  "latest", "current", "today", "this week", "this year", "right now",
-  "recent", "news", "trend", "market rate", "salary range", "hiring now",
-  "who is hiring", "2025", "2026", "benchmark", "average salary", "glassdoor",
-  "levels.fyi", "funding", "layoff", "stock", "open roles",
+  "latest",
+  "current",
+  "today",
+  "this week",
+  "this year",
+  "right now",
+  "recent",
+  "news",
+  "trend",
+  "market rate",
+  "salary range",
+  "hiring now",
+  "who is hiring",
+  "2025",
+  "2026",
+  "benchmark",
+  "average salary",
+  "glassdoor",
+  "levels.fyi",
+  "funding",
+  "layoff",
+  "stock",
+  "open roles",
 ];
 
 export function needsLiveData(text: string): boolean {

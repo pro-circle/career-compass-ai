@@ -8,24 +8,18 @@ const profileInput = z.object({
   yearsExp: z.number().int().min(0).default(0),
   targetRoles: z.array(z.string()).default([]),
   skills: z.array(z.string()).default([]),
-  links: z
-    .array(z.object({ label: z.string(), url: z.string() }))
-    .default([]),
+  links: z.array(z.object({ label: z.string(), url: z.string() })).default([]),
   resumeText: z.string().default(""),
 });
 
 export const saveOnboarding = createServerFn({ method: "POST" })
   .validator((data: unknown) => profileInput.parse(data))
   .handler(async ({ data }) => {
-    const { getAppSession, requireUserId } = await import(
-      "@/lib/session.server"
-    );
+    const { getAppSession, requireUserId } = await import("@/lib/session.server");
     const userId = await requireUserId();
     const session = await getAppSession();
 
-    const { getSupabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
     const db = getSupabaseAdmin();
     if (!db) {
       // No DB configured — mark onboarded in session so the flow still advances.
