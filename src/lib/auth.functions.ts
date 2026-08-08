@@ -1,59 +1,111 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const loginInput = z.object({
-  username: z.string().min(1),
-  password: z.string().min(1),
+const credentials = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+const signupInput = credentials.extend({
+  fullName: z.string().min(1).max(120),
   role: z.enum(["employer", "candidate"]),
 });
 
 export const login = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => loginInput.parse(data))
+  .validator((data: unknown) => credentials.parse(data))
   .handler(async ({ data }) => {
-    const {
-      DEMO_USERNAME,
-      DEMO_PASSWORD,
-      DEMO_EMPLOYER_ID,
-      DEMO_CANDIDATE_ID,
-      getAppSession,
-    } = await import("@/lib/session.server");
+    const { getSupabaseAuthClient, ensureProfile } = await import(
+      "@/lib/auth.server"
+    );
+    const { getAppSession } = await import("@/lib/session.server");
 
-    if (data.username !== DEMO_USERNAME || data.password !== DEMO_PASSWORD) {
-      return { ok: false as const, error: "Invalid credentials." };
+    const auth = getSupabaseAuthClient();
+    if (!auth) {
+      return {
+        ok: false as const,
+        error:
+          "Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.",
+      };
     }
 
-    const userId =
-      data.role === "employer" ? DEMO_EMPLOYER_ID : DEMO_CANDIDATE_ID;
+    const { data: res, error } = await auth.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+    if (error || !res.user) {
+      return { ok: false as const, error: error?.message ?? "Invalid credentials." };
+    }
 
-    // Look up onboarded flag if candidate.
-    let onboarded = data.role === "employer";
-    if (data.role === "candidate") {
-      try {
-        const { getSupabaseAdmin } = await import(
-          "@/integrations/supabase/client.server"
-        );
-        const admin = getSupabaseAdmin();
-        if (admin) {
-          const { data: row } = await admin
-            .from("profiles")
-            .select("onboarded")
-            .eq("id", userId)
-            .maybeSingle();
-          onboarded = !!row?.onboarded;
-        }
-      } catch {
-        // ignore; treat as not onboarded
-      }
+    const meta = (res.user.user_metadata ?? {}) as Record<string, string>;
+    const profile = await ensureProfile(
+      res.user.id,
+      (meta.role as "employer" | "candidate") ?? "candidate",
+      meta.full_name ?? "",
+      res.user.email ?? data.email,
+    );
+
+    const session = await getAppSession();
+    await session.update({
+      userId: res.user.id,
+      username: res.user.email ?? data.email,
+      role: profile.role,
+      onboarded: profile.onboarded,
+    });
+    return { ok: true as const, role: profile.role, onboarded: profile.onboarded };
+  });
+
+export const signup = createServerFn({ method: "POST" })
+  .validator((data: unknown) => signupInput.parse(data))
+  .handler(async ({ data }) => {
+    const { getSupabaseAuthClient, ensureProfile } = await import(
+      "@/lib/auth.server"
+    );
+    const { getAppSession } = await import("@/lib/session.server");
+
+    const auth = getSupabaseAuthClient();
+    if (!auth) {
+      return {
+        ok: false as const,
+        error:
+          "Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.",
+      };
+    }
+
+    const { data: res, error } = await auth.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: { data: { full_name: data.fullName, role: data.role } },
+    });
+    if (error) return { ok: false as const, error: error.message };
+    if (!res.user) {
+      return {
+        ok: false as const,
+        error: "Check your inbox to confirm your email, then sign in.",
+      };
+    }
+
+    const profile = await ensureProfile(
+      res.user.id,
+      data.role,
+      data.fullName,
+      data.email,
+    );
+
+    if (!res.session) {
+      return {
+        ok: false as const,
+        error: "Account created. Confirm your email, then sign in.",
+      };
     }
 
     const session = await getAppSession();
     await session.update({
-      userId,
-      username: data.username,
-      role: data.role,
-      onboarded,
+      userId: res.user.id,
+      username: data.email,
+      role: profile.role,
+      onboarded: profile.onboarded,
     });
-    return { ok: true as const, role: data.role, onboarded };
+    return { ok: true as const, role: profile.role, onboarded: profile.onboarded };
   });
 
 export const logout = createServerFn({ method: "POST" }).handler(async () => {
@@ -75,7 +127,6 @@ export const getCurrentSession = createServerFn({ method: "GET" }).handler(
     }
   },
 );
-
 
 export const markOnboarded = createServerFn({ method: "POST" }).handler(
   async () => {
