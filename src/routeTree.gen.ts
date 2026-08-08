@@ -25,11 +25,9 @@ import { Route as AppEmployerTemplatesRouteImport } from './routes/_app.employer
 import { Route as AppEmployerTalentPoolRouteImport } from './routes/_app.employer.talent-pool'
 import { Route as AppEmployerOffersRouteImport } from './routes/_app.employer.offers'
 import { Route as AppEmployerJobsRouteImport } from './routes/_app.employer.jobs'
-import { Route as AppEmployerInterviewsRouteImport } from './routes/_app.employer.interviews'
 import { Route as AppEmployerCareersRouteImport } from './routes/_app.employer.careers'
 import { Route as AppEmployerCandidatesRouteImport } from './routes/_app.employer.candidates'
 import { Route as AppEmployerAnalyticsRouteImport } from './routes/_app.employer.analytics'
-import { Route as AppCandidateSkillsRouteImport } from './routes/_app.candidate.skills'
 import { Route as AppCandidateResumeRouteImport } from './routes/_app.candidate.resume'
 import { Route as AppCandidatePortfolioRouteImport } from './routes/_app.candidate.portfolio'
 import { Route as AppCandidateOnboardingRouteImport } from './routes/_app.candidate.onboarding'
@@ -42,6 +40,9 @@ import { Route as AppCandidateCoverLetterRouteImport } from './routes/_app.candi
 import { Route as AppCandidateCareersRouteImport } from './routes/_app.candidate.careers'
 import { Route as AppCandidateAssistantRouteImport } from './routes/_app.candidate.assistant'
 import { Route as AppCandidateApplicationsRouteImport } from './routes/_app.candidate.applications'
+import { Route as AppEmployerJobsIndexRouteImport } from './routes/_app.employer.jobs.index'
+import { Route as AppEmployerJobsNewRouteImport } from './routes/_app.employer.jobs.new'
+import { Route as AppEmployerJobsJobIdRouteImport } from './routes/_app.employer.jobs.$jobId'
 
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
@@ -122,11 +123,6 @@ const AppEmployerJobsRoute = AppEmployerJobsRouteImport.update({
   path: '/employer/jobs',
   getParentRoute: () => AppRoute,
 } as any)
-const AppEmployerInterviewsRoute = AppEmployerInterviewsRouteImport.update({
-  id: '/employer/interviews',
-  path: '/employer/interviews',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppEmployerCareersRoute = AppEmployerCareersRouteImport.update({
   id: '/employer/careers',
   path: '/employer/careers',
@@ -140,11 +136,6 @@ const AppEmployerCandidatesRoute = AppEmployerCandidatesRouteImport.update({
 const AppEmployerAnalyticsRoute = AppEmployerAnalyticsRouteImport.update({
   id: '/employer/analytics',
   path: '/employer/analytics',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCandidateSkillsRoute = AppCandidateSkillsRouteImport.update({
-  id: '/candidate/skills',
-  path: '/candidate/skills',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCandidateResumeRoute = AppCandidateResumeRouteImport.update({
@@ -209,6 +200,21 @@ const AppCandidateApplicationsRoute =
     path: '/candidate/applications',
     getParentRoute: () => AppRoute,
   } as any)
+const AppEmployerJobsIndexRoute = AppEmployerJobsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppEmployerJobsRoute,
+} as any)
+const AppEmployerJobsNewRoute = AppEmployerJobsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AppEmployerJobsRoute,
+} as any)
+const AppEmployerJobsJobIdRoute = AppEmployerJobsJobIdRouteImport.update({
+  id: '/$jobId',
+  path: '/$jobId',
+  getParentRoute: () => AppEmployerJobsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -232,17 +238,18 @@ export interface FileRoutesByFullPath {
   '/candidate/onboarding': typeof AppCandidateOnboardingRoute
   '/candidate/portfolio': typeof AppCandidatePortfolioRoute
   '/candidate/resume': typeof AppCandidateResumeRoute
-  '/candidate/skills': typeof AppCandidateSkillsRoute
   '/employer/analytics': typeof AppEmployerAnalyticsRoute
   '/employer/candidates': typeof AppEmployerCandidatesRoute
   '/employer/careers': typeof AppEmployerCareersRoute
-  '/employer/interviews': typeof AppEmployerInterviewsRoute
-  '/employer/jobs': typeof AppEmployerJobsRoute
+  '/employer/jobs': typeof AppEmployerJobsRouteWithChildren
   '/employer/offers': typeof AppEmployerOffersRoute
   '/employer/talent-pool': typeof AppEmployerTalentPoolRoute
   '/employer/templates': typeof AppEmployerTemplatesRoute
   '/candidate/': typeof AppCandidateIndexRoute
   '/employer/': typeof AppEmployerIndexRoute
+  '/employer/jobs/$jobId': typeof AppEmployerJobsJobIdRoute
+  '/employer/jobs/new': typeof AppEmployerJobsNewRoute
+  '/employer/jobs/': typeof AppEmployerJobsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -266,17 +273,17 @@ export interface FileRoutesByTo {
   '/candidate/onboarding': typeof AppCandidateOnboardingRoute
   '/candidate/portfolio': typeof AppCandidatePortfolioRoute
   '/candidate/resume': typeof AppCandidateResumeRoute
-  '/candidate/skills': typeof AppCandidateSkillsRoute
   '/employer/analytics': typeof AppEmployerAnalyticsRoute
   '/employer/candidates': typeof AppEmployerCandidatesRoute
   '/employer/careers': typeof AppEmployerCareersRoute
-  '/employer/interviews': typeof AppEmployerInterviewsRoute
-  '/employer/jobs': typeof AppEmployerJobsRoute
   '/employer/offers': typeof AppEmployerOffersRoute
   '/employer/talent-pool': typeof AppEmployerTalentPoolRoute
   '/employer/templates': typeof AppEmployerTemplatesRoute
   '/candidate': typeof AppCandidateIndexRoute
   '/employer': typeof AppEmployerIndexRoute
+  '/employer/jobs/$jobId': typeof AppEmployerJobsJobIdRoute
+  '/employer/jobs/new': typeof AppEmployerJobsNewRoute
+  '/employer/jobs': typeof AppEmployerJobsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -302,17 +309,18 @@ export interface FileRoutesById {
   '/_app/candidate/onboarding': typeof AppCandidateOnboardingRoute
   '/_app/candidate/portfolio': typeof AppCandidatePortfolioRoute
   '/_app/candidate/resume': typeof AppCandidateResumeRoute
-  '/_app/candidate/skills': typeof AppCandidateSkillsRoute
   '/_app/employer/analytics': typeof AppEmployerAnalyticsRoute
   '/_app/employer/candidates': typeof AppEmployerCandidatesRoute
   '/_app/employer/careers': typeof AppEmployerCareersRoute
-  '/_app/employer/interviews': typeof AppEmployerInterviewsRoute
-  '/_app/employer/jobs': typeof AppEmployerJobsRoute
+  '/_app/employer/jobs': typeof AppEmployerJobsRouteWithChildren
   '/_app/employer/offers': typeof AppEmployerOffersRoute
   '/_app/employer/talent-pool': typeof AppEmployerTalentPoolRoute
   '/_app/employer/templates': typeof AppEmployerTemplatesRoute
   '/_app/candidate/': typeof AppCandidateIndexRoute
   '/_app/employer/': typeof AppEmployerIndexRoute
+  '/_app/employer/jobs/$jobId': typeof AppEmployerJobsJobIdRoute
+  '/_app/employer/jobs/new': typeof AppEmployerJobsNewRoute
+  '/_app/employer/jobs/': typeof AppEmployerJobsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -338,17 +346,18 @@ export interface FileRouteTypes {
     | '/candidate/onboarding'
     | '/candidate/portfolio'
     | '/candidate/resume'
-    | '/candidate/skills'
     | '/employer/analytics'
     | '/employer/candidates'
     | '/employer/careers'
-    | '/employer/interviews'
     | '/employer/jobs'
     | '/employer/offers'
     | '/employer/talent-pool'
     | '/employer/templates'
     | '/candidate/'
     | '/employer/'
+    | '/employer/jobs/$jobId'
+    | '/employer/jobs/new'
+    | '/employer/jobs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -372,17 +381,17 @@ export interface FileRouteTypes {
     | '/candidate/onboarding'
     | '/candidate/portfolio'
     | '/candidate/resume'
-    | '/candidate/skills'
     | '/employer/analytics'
     | '/employer/candidates'
     | '/employer/careers'
-    | '/employer/interviews'
-    | '/employer/jobs'
     | '/employer/offers'
     | '/employer/talent-pool'
     | '/employer/templates'
     | '/candidate'
     | '/employer'
+    | '/employer/jobs/$jobId'
+    | '/employer/jobs/new'
+    | '/employer/jobs'
   id:
     | '__root__'
     | '/'
@@ -407,17 +416,18 @@ export interface FileRouteTypes {
     | '/_app/candidate/onboarding'
     | '/_app/candidate/portfolio'
     | '/_app/candidate/resume'
-    | '/_app/candidate/skills'
     | '/_app/employer/analytics'
     | '/_app/employer/candidates'
     | '/_app/employer/careers'
-    | '/_app/employer/interviews'
     | '/_app/employer/jobs'
     | '/_app/employer/offers'
     | '/_app/employer/talent-pool'
     | '/_app/employer/templates'
     | '/_app/candidate/'
     | '/_app/employer/'
+    | '/_app/employer/jobs/$jobId'
+    | '/_app/employer/jobs/new'
+    | '/_app/employer/jobs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -546,13 +556,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEmployerJobsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/employer/interviews': {
-      id: '/_app/employer/interviews'
-      path: '/employer/interviews'
-      fullPath: '/employer/interviews'
-      preLoaderRoute: typeof AppEmployerInterviewsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/employer/careers': {
       id: '/_app/employer/careers'
       path: '/employer/careers'
@@ -572,13 +575,6 @@ declare module '@tanstack/react-router' {
       path: '/employer/analytics'
       fullPath: '/employer/analytics'
       preLoaderRoute: typeof AppEmployerAnalyticsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/candidate/skills': {
-      id: '/_app/candidate/skills'
-      path: '/candidate/skills'
-      fullPath: '/candidate/skills'
-      preLoaderRoute: typeof AppCandidateSkillsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/candidate/resume': {
@@ -665,8 +661,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCandidateApplicationsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/employer/jobs/': {
+      id: '/_app/employer/jobs/'
+      path: '/'
+      fullPath: '/employer/jobs/'
+      preLoaderRoute: typeof AppEmployerJobsIndexRouteImport
+      parentRoute: typeof AppEmployerJobsRoute
+    }
+    '/_app/employer/jobs/new': {
+      id: '/_app/employer/jobs/new'
+      path: '/new'
+      fullPath: '/employer/jobs/new'
+      preLoaderRoute: typeof AppEmployerJobsNewRouteImport
+      parentRoute: typeof AppEmployerJobsRoute
+    }
+    '/_app/employer/jobs/$jobId': {
+      id: '/_app/employer/jobs/$jobId'
+      path: '/$jobId'
+      fullPath: '/employer/jobs/$jobId'
+      preLoaderRoute: typeof AppEmployerJobsJobIdRouteImport
+      parentRoute: typeof AppEmployerJobsRoute
+    }
   }
 }
+
+interface AppEmployerJobsRouteChildren {
+  AppEmployerJobsJobIdRoute: typeof AppEmployerJobsJobIdRoute
+  AppEmployerJobsNewRoute: typeof AppEmployerJobsNewRoute
+  AppEmployerJobsIndexRoute: typeof AppEmployerJobsIndexRoute
+}
+
+const AppEmployerJobsRouteChildren: AppEmployerJobsRouteChildren = {
+  AppEmployerJobsJobIdRoute: AppEmployerJobsJobIdRoute,
+  AppEmployerJobsNewRoute: AppEmployerJobsNewRoute,
+  AppEmployerJobsIndexRoute: AppEmployerJobsIndexRoute,
+}
+
+const AppEmployerJobsRouteWithChildren = AppEmployerJobsRoute._addFileChildren(
+  AppEmployerJobsRouteChildren,
+)
 
 interface AppRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
@@ -682,12 +715,10 @@ interface AppRouteChildren {
   AppCandidateOnboardingRoute: typeof AppCandidateOnboardingRoute
   AppCandidatePortfolioRoute: typeof AppCandidatePortfolioRoute
   AppCandidateResumeRoute: typeof AppCandidateResumeRoute
-  AppCandidateSkillsRoute: typeof AppCandidateSkillsRoute
   AppEmployerAnalyticsRoute: typeof AppEmployerAnalyticsRoute
   AppEmployerCandidatesRoute: typeof AppEmployerCandidatesRoute
   AppEmployerCareersRoute: typeof AppEmployerCareersRoute
-  AppEmployerInterviewsRoute: typeof AppEmployerInterviewsRoute
-  AppEmployerJobsRoute: typeof AppEmployerJobsRoute
+  AppEmployerJobsRoute: typeof AppEmployerJobsRouteWithChildren
   AppEmployerOffersRoute: typeof AppEmployerOffersRoute
   AppEmployerTalentPoolRoute: typeof AppEmployerTalentPoolRoute
   AppEmployerTemplatesRoute: typeof AppEmployerTemplatesRoute
@@ -709,12 +740,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppCandidateOnboardingRoute: AppCandidateOnboardingRoute,
   AppCandidatePortfolioRoute: AppCandidatePortfolioRoute,
   AppCandidateResumeRoute: AppCandidateResumeRoute,
-  AppCandidateSkillsRoute: AppCandidateSkillsRoute,
   AppEmployerAnalyticsRoute: AppEmployerAnalyticsRoute,
   AppEmployerCandidatesRoute: AppEmployerCandidatesRoute,
   AppEmployerCareersRoute: AppEmployerCareersRoute,
-  AppEmployerInterviewsRoute: AppEmployerInterviewsRoute,
-  AppEmployerJobsRoute: AppEmployerJobsRoute,
+  AppEmployerJobsRoute: AppEmployerJobsRouteWithChildren,
   AppEmployerOffersRoute: AppEmployerOffersRoute,
   AppEmployerTalentPoolRoute: AppEmployerTalentPoolRoute,
   AppEmployerTemplatesRoute: AppEmployerTemplatesRoute,
@@ -738,13 +767,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

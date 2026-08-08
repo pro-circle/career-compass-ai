@@ -17,6 +17,7 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import type { LanguageModel } from "ai";
+import { serverEnv } from "./env.server";
 
 export const GROQ_MODEL = "openai/gpt-oss-120b";
 export const GEMINI_MODEL = "gemini-2.5-flash";
@@ -28,10 +29,10 @@ let cursor = 0;
 /** All configured Groq keys, in declaration order. */
 export function groqKeys(): string[] {
   const raw = [
-    process.env.GROQ_API_KEY_1,
-    process.env.GROQ_API_KEY_2,
-    process.env.GROQ_API_KEY_3,
-    process.env.GROQ_API_KEY,
+    serverEnv("GROQ_API_KEY_1"),
+    serverEnv("GROQ_API_KEY_2"),
+    serverEnv("GROQ_API_KEY_3"),
+    serverEnv("GROQ_API_KEY"),
   ];
   return Array.from(new Set(raw.filter((k): k is string => !!k && k.length > 8)));
 }
@@ -56,7 +57,9 @@ function groqModel(key: string): LanguageModel {
 }
 
 export function geminiKey(): string | undefined {
-  return process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  return (
+    serverEnv("GEMINI_API_KEY") || serverEnv("GOOGLE_GENERATIVE_AI_API_KEY")
+  );
 }
 
 export function geminiModel(): LanguageModel | null {

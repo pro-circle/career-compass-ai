@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_app/employer/")({
 });
 
 function EmployerDashboard() {
-  const { analyticsMetrics, candidates, jobs, interviews: upcomingInterviews } = useDataset();
+  const { analyticsMetrics, candidates, jobs } = useDataset();
   const openJobs = jobs.filter((j) => j.status === "Open");
   const topCandidates = [...candidates].sort((a, b) => b.matchScore - a.matchScore).slice(0, 4);
 
@@ -28,9 +28,12 @@ function EmployerDashboard() {
             >
               View all jobs
             </Link>
-            <button className="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-2 text-xs font-semibold text-brand-foreground hover:opacity-90">
+            <Link
+              to="/employer/jobs/new"
+              className="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-2 text-xs font-semibold text-brand-foreground hover:opacity-90"
+            >
               <Plus className="size-3.5" /> New requisition
-            </button>
+            </Link>
           </>
         }
       />
@@ -78,7 +81,8 @@ function EmployerDashboard() {
                     </td>
                     <td className="px-5 py-4 text-right">
                       <Link
-                        to="/employer/candidates"
+                        to="/employer/jobs/$jobId"
+                        params={{ jobId: job.id }}
                         className="text-xs font-medium text-muted-foreground group-hover:text-brand"
                       >
                         Review →
@@ -155,31 +159,25 @@ function EmployerDashboard() {
             </div>
           </div>
 
-          <SectionCard title="Upcoming interviews">
+          <SectionCard title="Jump back into a role">
             <div className="divide-y divide-border">
-              {upcomingInterviews.slice(0, 4).map((i) => (
-                <div key={i.candidate} className="flex items-start gap-4 p-4">
-                  <div className="text-center">
-                    <div className="text-sm font-bold">{i.date.split(" ")[1]}</div>
-                    <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                      {i.date.split(" ")[0]}
-                    </div>
-                  </div>
+              {openJobs.slice(0, 5).map((job) => (
+                <Link
+                  key={job.id}
+                  to="/employer/jobs/$jobId"
+                  params={{ jobId: job.id }}
+                  className="flex items-center gap-3 p-4 hover:bg-surface/40"
+                >
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-xs font-semibold">{i.candidate}</div>
+                    <div className="truncate text-xs font-semibold">{job.title}</div>
                     <div className="truncate text-[10px] text-muted-foreground">
-                      {i.round} · {i.time}
+                      {job.new} new of {job.applicants} applicants
                     </div>
                   </div>
-                </div>
+                  <ArrowRight className="size-3 text-muted-foreground" />
+                </Link>
               ))}
             </div>
-            <Link
-              to="/employer/interviews"
-              className="flex items-center justify-center gap-1 border-t border-border p-3 text-xs font-medium text-brand hover:bg-surface"
-            >
-              Open scheduler <ArrowRight className="size-3" />
-            </Link>
           </SectionCard>
         </div>
       </div>
