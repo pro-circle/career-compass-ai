@@ -4,7 +4,8 @@ import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect } from "react";
 import { PageHeader } from "@/routes/_app";
 import { SectionCard } from "@/components/dashboard/primitives";
-import { Send, Sparkles, MessagesSquare } from "lucide-react";
+import { Mic, Send, Sparkles, MessagesSquare, Square } from "lucide-react";
+import { useSpeechInput } from "@/hooks/use-speech-input";
 import { usePrefs } from "@/hooks/use-prefs";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
@@ -25,6 +26,7 @@ function Assistant() {
   const [input, setInput] = useState("");
   const { floatingAssistant, setFloatingAssistant } = usePrefs();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const voice = useSpeechInput();
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
@@ -41,8 +43,20 @@ function Assistant() {
     const t = text.trim();
     if (!t || busy) return;
     setInput("");
+    voice.reset();
     await sendMessage({ text: t });
   }
+
+  // Stream recognized speech straight into the composer.
+  useEffect(() => {
+    if (!voice.listening && !voice.transcript) return;
+    const live = [voice.transcript, voice.interim].filter(Boolean).join(" ");
+    if (live) setInput(live);
+  }, [voice.transcript, voice.interim, voice.listening]);
+
+  useEffect(() => {
+    if (voice.error) toast.error(voice.error);
+  }, [voice.error]);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -139,10 +153,25 @@ function Assistant() {
               }}
               className="flex items-center gap-2 border-t border-border p-4"
             >
+              <button
+                type="button"
+                onClick={() => (voice.listening ? voice.stop() : voice.start())}
+                disabled={!voice.supported}
+                aria-pressed={voice.listening}
+                aria-label={voice.listening ? "Stop voice input" : "Start voice input"}
+                title={voice.supported ? "Voice input" : "Voice input not supported here"}
+                className={`grid size-9 shrink-0 place-items-center rounded-md border transition-colors disabled:opacity-40 ${
+                  voice.listening
+                    ? "animate-pulse border-accent bg-accent text-accent-foreground"
+                    : "border-border bg-surface text-foreground/70 hover:text-foreground"
+                }`}
+              >
+                {voice.listening ? <Square className="size-3.5" /> : <Mic className="size-4" />}
+              </button>
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask anything about your career…"
+                placeholder={voice.listening ? "Listening…" : "Ask anything, or tap the mic to speak"}
                 className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-accent/20"
               />
               <button
