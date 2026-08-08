@@ -8,7 +8,7 @@ async function db() {
 
 /** Moves a candidate to a new pipeline stage. */
 export const setCandidateStatus = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z
       .object({
         candidateId: z.string().min(1),
@@ -36,7 +36,7 @@ export const setCandidateStatus = createServerFn({ method: "POST" })
 
 /** Sends an email or in-app notification to one or more candidates. */
 export const contactCandidates = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z
       .object({
         candidateIds: z.array(z.string().min(1)).min(1).max(50),

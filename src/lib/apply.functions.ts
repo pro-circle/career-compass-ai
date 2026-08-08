@@ -43,7 +43,7 @@ export const listOpenJobs = createServerFn({ method: "GET" }).handler(
 
 /** Public read for the shareable job link. */
 export const getPublicJob = createServerFn({ method: "GET" })
-  .inputValidator((d: unknown) => z.object({ id: z.string().min(1) }).parse(d))
+  .validator((d: unknown) => z.object({ id: z.string().min(1) }).parse(d))
   .handler(async ({ data }): Promise<Job | null> => {
     const client = await db();
     if (!client) return null;
@@ -57,7 +57,7 @@ export const getPublicJob = createServerFn({ method: "GET" })
 
 /** Creates a requisition and returns its id + shareable link slug. */
 export const createJob = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z
       .object({
         title: z.string().min(2),
@@ -98,7 +98,7 @@ export const createJob = createServerFn({ method: "POST" })
 
 /** Candidate applies to a requisition (from careers page or a shared link). */
 export const applyToJob = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z
       .object({
         jobId: z.string().min(1),

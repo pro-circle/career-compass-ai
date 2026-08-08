@@ -64,14 +64,14 @@ async function extractJobWithAI(url: string, text: string): Promise<ParsedJob> {
 }
 
 export const parseJobUrl = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => urlInput.parse(d))
+  .validator((d: unknown) => urlInput.parse(d))
   .handler(async ({ data }): Promise<ParsedJob> => {
     const text = await fetchPageText(data.url);
     return extractJobWithAI(data.url, text);
   });
 
 export const importJobFromUrl = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => urlInput.parse(d))
+  .validator((d: unknown) => urlInput.parse(d))
   .handler(async ({ data }) => {
     const { requireUserId } = await import("@/lib/session.server");
         const employerId = await requireUserId();
@@ -140,7 +140,7 @@ function looksLikeJob(text: string, title: string): boolean {
 }
 
 export const evaluateJobUrl = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => urlInput.parse(d))
+  .validator((d: unknown) => urlInput.parse(d))
   .handler(async ({ data }) => {
     const { requireUserId } = await import("@/lib/session.server");
         const userId = await requireUserId();

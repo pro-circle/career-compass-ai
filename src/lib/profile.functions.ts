@@ -15,7 +15,7 @@ const profileInput = z.object({
 });
 
 export const saveOnboarding = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => profileInput.parse(data))
+  .validator((data: unknown) => profileInput.parse(data))
   .handler(async ({ data }) => {
     const { getAppSession, requireUserId } = await import(
       "@/lib/session.server"

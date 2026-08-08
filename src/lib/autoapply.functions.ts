@@ -74,7 +74,7 @@ export const getAutoApply = createServerFn({ method: "GET" }).handler(
 );
 
 export const setAutoApply = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z
       .object({
         enabled: z.boolean(),
