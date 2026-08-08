@@ -155,18 +155,18 @@ function Landing() {
               <Sparkles className="size-3" /> Flagship feature
             </div>
             <h2 className="font-display text-3xl font-extrabold leading-tight lg:text-4xl">
-              External job preparation
+              The Job Hunt agent
             </h2>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-              Applying to a role that isn't on this ATS? Paste the posting link. We read the
-              page, score your fit against your resume, expose the gaps, and build a
-              stage-by-stage interview plan with the questions you'll actually be asked.
+              Set your titles, locations and match bar once. The agent then hunts across
+              sources around the clock, tailors your resume and cover letter to each posting,
+              and applies — asking for your approval first, or fully on autopilot.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {[
-                { icon: Search, t: "Reads any posting", d: "Careers pages, boards, PDFs of text." },
-                { icon: Target, t: "Explainable fit score", d: "Strengths and gaps, not a black box." },
-                { icon: Mic, t: "Interview plan", d: "Per-stage focus areas and questions." },
+                { icon: Search, t: "Hunts every source", d: "Boards, careers pages, any pasted link." },
+                { icon: Target, t: "Tailors each apply", d: "Resume and cover note per posting." },
+                { icon: Rocket, t: "Review or autopilot", d: "It asks first — until you say don't." },
               ].map(({ icon: Icon, t, d }) => (
                 <div key={t} className="rounded-xl border border-border bg-card/70 p-4">
                   <Icon className="mb-2 size-4 text-accent" />
@@ -175,12 +175,20 @@ function Landing() {
                 </div>
               ))}
             </div>
-            <Link
-              to="/candidate/external"
-              className="mt-8 inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90"
-            >
-              Try external job prep <ArrowRight className="size-4" />
-            </Link>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link
+                to="/candidate/job-hunt"
+                className="inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90"
+              >
+                Start the Job Hunt agent <ArrowRight className="size-4" />
+              </Link>
+              <Link
+                to="/candidate/external"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border px-4 py-2.5 text-sm font-semibold hover:bg-surface"
+              >
+                Or prep for a pasted job link
+              </Link>
+            </div>
           </div>
         </div>
       </section>
