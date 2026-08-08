@@ -43,10 +43,14 @@ function PortfolioPage() {
         <SectionCard title="Public profile">
           <div className="p-5 text-center">
             <div className="mx-auto grid size-20 place-items-center rounded-full bg-accent/15 text-lg font-bold text-accent">
-              JR
+              {initials}
             </div>
-            <div className="mt-3 font-display text-lg font-extrabold">Jordan Rivera</div>
-            <div className="text-xs text-muted-foreground">Senior Product Designer</div>
+            <div className="mt-3 font-display text-lg font-extrabold">
+              {profile?.fullName || "Your name"}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {profile?.headline || "Add a headline in onboarding"}
+            </div>
             <div className="mt-4 flex justify-center gap-2">
               <a className="grid size-8 place-items-center rounded-full border border-border text-muted-foreground hover:text-foreground">
                 <Globe className="size-3.5" />
