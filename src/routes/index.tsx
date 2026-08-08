@@ -33,14 +33,26 @@ export const Route = createFileRoute("/")({
 });
 
 const aiFeatures = [
-  { icon: ScanSearch, title: "Resume Parsing", desc: "Extracts skills, education, experience, and projects." },
-  { icon: Brain, title: "Semantic Matching", desc: "Matches candidates using AI beyond keyword search." },
+  {
+    icon: ScanSearch,
+    title: "Resume Parsing",
+    desc: "Extracts skills, education, experience, and projects.",
+  },
+  {
+    icon: Brain,
+    title: "Semantic Matching",
+    desc: "Matches candidates using AI beyond keyword search.",
+  },
   { icon: Target, title: "AI Ranking", desc: "Prioritizes applicants by overall suitability." },
   { icon: FileText, title: "Resume Builder", desc: "Create ATS-friendly professional resumes." },
   { icon: Wand2, title: "Resume Optimizer", desc: "Improve ATS score and job relevance." },
   { icon: Languages, title: "Resume Translator", desc: "Convert resumes into multiple languages." },
   { icon: Mic, title: "AI Mock Interview", desc: "Live voice interview practice with feedback." },
-  { icon: MessagesSquare, title: "Career Assistant", desc: "Answers career and job-related queries." },
+  {
+    icon: MessagesSquare,
+    title: "Career Assistant",
+    desc: "Answers career and job-related queries.",
+  },
 ];
 
 const employerFeatures = [
@@ -78,9 +90,15 @@ function Landing() {
           <span className="font-display text-xl font-extrabold tracking-tight">ATS Engine</span>
         </div>
         <div className="hidden gap-8 text-sm font-medium text-muted-foreground md:flex">
-          <a href="#features" className="hover:text-foreground">Features</a>
-          <a href="#recruiters" className="hover:text-foreground">Recruiters</a>
-          <a href="#candidates" className="hover:text-foreground">Candidates</a>
+          <a href="#features" className="hover:text-foreground">
+            Features
+          </a>
+          <a href="#recruiters" className="hover:text-foreground">
+            Recruiters
+          </a>
+          <a href="#candidates" className="hover:text-foreground">
+            Candidates
+          </a>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
@@ -91,10 +109,10 @@ function Landing() {
             Login
           </Link>
           <Link
-            to="/demo"
+            to="/auth/signup"
             className="inline-flex items-center gap-1.5 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
           >
-            View Demo
+            Get started
             <ArrowRight className="size-3.5" />
           </Link>
         </div>
@@ -103,8 +121,7 @@ function Landing() {
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-6 py-20 text-center lg:py-28">
         <h1 className="mx-auto max-w-3xl font-display text-5xl font-extrabold leading-[1.05] tracking-tight lg:text-6xl">
-          The intelligent bridge between{" "}
-          <span className="text-brand">talent</span> and{" "}
+          The intelligent bridge between <span className="text-brand">talent</span> and{" "}
           <span className="text-accent">opportunity</span>.
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
@@ -158,15 +175,23 @@ function Landing() {
               The Job Hunt agent
             </h2>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-              Set your titles, locations and match bar once. The agent then hunts across
-              sources around the clock, tailors your resume and cover letter to each posting,
-              and applies — asking for your approval first, or fully on autopilot.
+              Set your titles, locations and match bar once. The agent then hunts across sources
+              around the clock, tailors your resume and cover letter to each posting, and applies —
+              asking for your approval first, or fully on autopilot.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {[
-                { icon: Search, t: "Hunts every source", d: "Boards, careers pages, any pasted link." },
+                {
+                  icon: Search,
+                  t: "Hunts every source",
+                  d: "Boards, careers pages, any pasted link.",
+                },
                 { icon: Target, t: "Tailors each apply", d: "Resume and cover note per posting." },
-                { icon: Rocket, t: "Review or autopilot", d: "It asks first — until you say don't." },
+                {
+                  icon: Rocket,
+                  t: "Review or autopilot",
+                  d: "It asks first — until you say don't.",
+                },
               ].map(({ icon: Icon, t, d }) => (
                 <div key={t} className="rounded-xl border border-border bg-card/70 p-4">
                   <Icon className="mb-2 size-4 text-accent" />
@@ -207,8 +232,8 @@ function Landing() {
               </h2>
             </div>
             <p className="max-w-md text-sm text-muted-foreground">
-              Every workflow — from parsing a resume to running a mock interview — is
-              powered by the same reasoning core.
+              Every workflow — from parsing a resume to running a mock interview — is powered by the
+              same reasoning core.
             </p>
           </div>
 
@@ -240,8 +265,8 @@ function Landing() {
               Neural ranking that actually explains itself.
             </h2>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              Stop reading 200 resumes. Our engine ranks, summarizes, and surfaces the
-              signal — with rationale you can defend in a hiring committee.
+              Stop reading 200 resumes. Our engine ranks, summarizes, and surfaces the signal — with
+              rationale you can defend in a hiring committee.
             </p>
             <ul className="mt-8 space-y-3">
               {employerFeatures.map((f, i) => (
@@ -279,8 +304,8 @@ function Landing() {
                 Your job hunt, <span className="text-muted-foreground">on autopilot.</span>
               </h2>
               <p className="mt-4 leading-relaxed text-muted-foreground">
-                We don't just match you — we train you. Real-time resume feedback,
-                voice mock interviews, and a step-by-step path to your dream role.
+                We don't just match you — we train you. Real-time resume feedback, voice mock
+                interviews, and a step-by-step path to your dream role.
               </p>
               <ul className="mt-8 space-y-3">
                 {candidateFeatures.map((f, i) => (
@@ -302,9 +327,6 @@ function Landing() {
           </div>
         </div>
       </section>
-
-
-
 
       {/* CTA */}
       <section className="mx-auto max-w-6xl px-6 pb-24">
@@ -367,7 +389,12 @@ function MockRecruiterCard() {
         <div className="space-y-2">
           {[
             { name: "Sarah Chen", role: "Ex-Linear, Uber", score: 98, color: "text-accent" },
-            { name: "Marcus Thorne", role: "Sr. Designer at Stripe", score: 94, color: "text-brand" },
+            {
+              name: "Marcus Thorne",
+              role: "Sr. Designer at Stripe",
+              score: 94,
+              color: "text-brand",
+            },
             { name: "Anika Sharma", role: "Notion", score: 86, color: "text-brand" },
           ].map((c, i) => (
             <div
@@ -376,7 +403,10 @@ function MockRecruiterCard() {
             >
               <div className="flex items-center gap-3">
                 <div className="grid size-8 place-items-center rounded-full bg-brand/10 text-xs font-bold text-brand">
-                  {c.name.split(" ").map((n) => n[0]).join("")}
+                  {c.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </div>
                 <div>
                   <div className="text-xs font-bold">{c.name}</div>

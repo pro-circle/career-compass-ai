@@ -20,13 +20,13 @@ const statusTone: Record<string, string> = {
 
 function OffersPage() {
   const { offers } = useDataset();
-  const [candidate, setCandidate] = useState("Sarah Chen");
-  const [role, setRole] = useState("Senior Product Designer");
-  const [salary, setSalary] = useState("185000");
-  const [equity, setEquity] = useState("0.15");
-  const [start, setStart] = useState("2026-04-01");
+  const [candidate, setCandidate] = useState("");
+  const [role, setRole] = useState("");
+  const [salary, setSalary] = useState("");
+  const [equity, setEquity] = useState("");
+  const [start, setStart] = useState("");
 
-  const body = `Dear ${candidate},\n\nWe are thrilled to extend an offer for the position of ${role} at ATS Engine. Based on your interviews and portfolio, our team is unanimously excited to have you join us.\n\n· Base salary: $${Number(salary).toLocaleString()}\n· Equity: ${equity}% (4-year vest, 1-year cliff)\n· Start date: ${start}\n· PTO: Unlimited, with a 3-week minimum\n· Health, dental, vision covered 100% (dependents 80%)\n\nThis offer is open for 7 days. Reply here to accept or discuss.\n\nWarmly,\nJulianne Deitch\nHead of Talent, ATS Engine`;
+  const body = `Dear ${candidate || "candidate"},\n\nWe are thrilled to extend an offer for the position of ${role} at ATS Engine. Based on your interviews and portfolio, our team is unanimously excited to have you join us.\n\n· Base salary: $${salary ? Number(salary).toLocaleString() : "—"}\n· Equity: ${equity}% (4-year vest, 1-year cliff)\n· Start date: ${start}\n· PTO: Unlimited, with a 3-week minimum\n· Health, dental, vision covered 100% (dependents 80%)\n\nThis offer is open for 7 days. Reply here to accept or discuss.\n\nWarmly,\nJulianne Deitch\nHead of Talent, ATS Engine`;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">

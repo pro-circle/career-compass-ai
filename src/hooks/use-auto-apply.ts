@@ -7,7 +7,6 @@ import {
   type AutoApplyLogEntry,
   type AutoApplySettings,
 } from "@/lib/autoapply.functions";
-import { useMockActive } from "@/hooks/use-mock-active";
 
 const INTERVAL_MS = 60_000;
 
@@ -15,10 +14,9 @@ const INTERVAL_MS = 60_000;
  * Candidate auto-apply agent. While enabled (and the tab is open) it asks the
  * server to run one pass every minute: the server picks fresh matches above the
  * score threshold, submits applications, and records an audit log.
- * Disabled while the mock-data overlay is on so demo browsing never writes rows.
+
  */
 export function useAutoApplyAgent() {
-  const mock = useMockActive();
   const [settings, setSettings] = useState<AutoApplySettings>({
     enabled: false,
     minScore: 85,
@@ -49,7 +47,7 @@ export function useAutoApplyAgent() {
   }, []);
 
   const runOnce = useCallback(async () => {
-    if (busy.current || mock) return;
+    if (busy.current) return;
     busy.current = true;
     setRunning(true);
     try {
@@ -63,21 +61,19 @@ export function useAutoApplyAgent() {
         );
       }
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Auto-apply pass failed",
-      );
+      toast.error(err instanceof Error ? err.message : "Auto-apply pass failed");
     } finally {
       busy.current = false;
       setRunning(false);
     }
-  }, [mock]);
+  }, []);
 
   useEffect(() => {
-    if (!settings.enabled || mock) return;
+    if (!settings.enabled) return;
     void runOnce();
     const t = setInterval(() => void runOnce(), INTERVAL_MS);
     return () => clearInterval(t);
-  }, [settings.enabled, mock, runOnce]);
+  }, [settings.enabled, runOnce]);
 
   const update = useCallback(
     async (patch: Partial<AutoApplySettings>) => {
@@ -94,9 +90,7 @@ export function useAutoApplyAgent() {
         }
       } catch (err) {
         setSettings(settings);
-        toast.error(
-          err instanceof Error ? err.message : "Could not save settings",
-        );
+        toast.error(err instanceof Error ? err.message : "Could not save settings");
       }
     },
     [settings],

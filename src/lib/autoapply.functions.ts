@@ -24,15 +24,10 @@ const DEFAULTS: AutoApplySettings = {
 };
 
 async function ctx() {
-  const { getAppSession, DEMO_CANDIDATE_ID } = await import(
-    "@/lib/session.server"
-  );
-  const { getSupabaseAdmin } = await import(
-    "@/integrations/supabase/client.server"
-  );
-  const session = await getAppSession();
+  const { requireUserId } = await import("@/lib/session.server");
+  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
   return {
-    userId: session.data.userId ?? DEMO_CANDIDATE_ID,
+    userId: await requireUserId(),
     db: getSupabaseAdmin(),
   };
 }
@@ -77,7 +72,7 @@ export const getAutoApply = createServerFn({ method: "GET" }).handler(
 );
 
 export const setAutoApply = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z
       .object({
         enabled: z.boolean(),
@@ -152,9 +147,7 @@ export const runAutoApply = createServerFn({ method: "POST" }).handler(
       .select("job_title,company")
       .eq("user_id", userId);
     const seen = new Set(
-      ((existing ?? []) as any[]).map(
-        (a) => `${a.job_title}|${a.company}`.toLowerCase(),
-      ),
+      ((existing ?? []) as any[]).map((a) => `${a.job_title}|${a.company}`.toLowerCase()),
     );
 
     const applied: AutoApplyLogEntry[] = [];

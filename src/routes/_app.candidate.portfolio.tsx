@@ -3,6 +3,7 @@ import { useState } from "react";
 import { PageHeader } from "@/routes/_app";
 import { SectionCard } from "@/components/dashboard/primitives";
 import { useDataset } from "@/hooks/use-dataset";
+import { useProfile } from "@/hooks/use-profile";
 import { Plus, Image as ImageIcon, ExternalLink, Github, Globe } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/_app/candidate/portfolio")({
 
 function PortfolioPage() {
   const { portfolioProjects: projects } = useDataset();
+  const { profile, initials } = useProfile();
   const [view, setView] = useState<"grid" | "list">("grid");
 
   return (
@@ -43,10 +45,14 @@ function PortfolioPage() {
         <SectionCard title="Public profile">
           <div className="p-5 text-center">
             <div className="mx-auto grid size-20 place-items-center rounded-full bg-accent/15 text-lg font-bold text-accent">
-              JR
+              {initials}
             </div>
-            <div className="mt-3 font-display text-lg font-extrabold">Jordan Rivera</div>
-            <div className="text-xs text-muted-foreground">Senior Product Designer</div>
+            <div className="mt-3 font-display text-lg font-extrabold">
+              {profile?.fullName || "Your name"}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {profile?.headline || "Add a headline in onboarding"}
+            </div>
             <div className="mt-4 flex justify-center gap-2">
               <a className="grid size-8 place-items-center rounded-full border border-border text-muted-foreground hover:text-foreground">
                 <Globe className="size-3.5" />

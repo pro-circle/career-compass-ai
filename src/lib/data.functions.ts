@@ -14,39 +14,30 @@ import type {
 } from "./types";
 
 async function admin() {
-  const { getSupabaseAdmin } = await import(
-    "@/integrations/supabase/client.server"
-  );
+  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
   return getSupabaseAdmin();
 }
 
-export const listJobs = createServerFn({ method: "GET" }).handler(
-  async (): Promise<Job[]> => {
-    const db = await admin();
-    if (!db) return [];
-    const { data } = await db
-      .from("jobs")
-      .select("*")
-      .order("posted_at", { ascending: false });
-    return (data ?? []).map((r: any) => ({
-      id: r.id,
-      title: r.title,
-      department: r.department ?? "",
-      location: r.location ?? "",
-      type: (r.type ?? "Full-time") as Job["type"],
-      postedAgo: r.posted_at
-        ? new Date(r.posted_at).toLocaleDateString()
-        : "",
-      status: r.status as Job["status"],
-      applicants: r.applicants ?? 0,
-      new: r.new_count ?? 0,
-      matchAvg: r.match_avg ?? 0,
-      salary: r.salary ?? "",
-      description: r.description ?? "",
-      tags: r.tags ?? [],
-    }));
-  },
-);
+export const listJobs = createServerFn({ method: "GET" }).handler(async (): Promise<Job[]> => {
+  const db = await admin();
+  if (!db) return [];
+  const { data } = await db.from("jobs").select("*").order("posted_at", { ascending: false });
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    title: r.title,
+    department: r.department ?? "",
+    location: r.location ?? "",
+    type: (r.type ?? "Full-time") as Job["type"],
+    postedAgo: r.posted_at ? new Date(r.posted_at).toLocaleDateString() : "",
+    status: r.status as Job["status"],
+    applicants: r.applicants ?? 0,
+    new: r.new_count ?? 0,
+    matchAvg: r.match_avg ?? 0,
+    salary: r.salary ?? "",
+    description: r.description ?? "",
+    tags: r.tags ?? [],
+  }));
+});
 
 export const listCandidates = createServerFn({ method: "GET" }).handler(
   async (): Promise<Candidate[]> => {
@@ -153,10 +144,7 @@ export const getRoadmap = createServerFn({ method: "GET" }).handler(
   async (): Promise<RoadmapItem[]> => {
     const db = await admin();
     if (!db) return [];
-    const { data } = await db
-      .from("roadmap")
-      .select("*")
-      .order("ord", { ascending: true });
+    const { data } = await db.from("roadmap").select("*").order("ord", { ascending: true });
     return (data ?? []).map((r: any) => ({
       week: r.week,
       title: r.title,
@@ -201,18 +189,11 @@ export const getAnalytics = createServerFn({ method: "GET" }).handler(
 
 export const getCandidateProfile = createServerFn({ method: "GET" }).handler(
   async (): Promise<CandidateProfile | null> => {
-    const { getAppSession, DEMO_CANDIDATE_ID } = await import(
-      "@/lib/session.server"
-    );
-    const session = await getAppSession();
-    const userId = session.data.userId ?? DEMO_CANDIDATE_ID;
+    const { requireUserId } = await import("@/lib/session.server");
+    const userId = await requireUserId();
     const db = await admin();
     if (!db) return null;
-    const { data } = await db
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .maybeSingle();
+    const { data } = await db.from("profiles").select("*").eq("id", userId).maybeSingle();
     if (!data) return null;
     return {
       id: data.id,
@@ -254,13 +235,9 @@ export const listInterviews = createServerFn({ method: "GET" }).handler(
         id: r.id,
         candidate: r.candidate_name ?? "",
         role: r.role ?? "",
-        time: when
-          ? when.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-          : "",
+        time: when ? when.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "",
         type: r.type ?? "",
-        date: when
-          ? when.toLocaleDateString([], { month: "short", day: "2-digit" })
-          : "",
+        date: when ? when.toLocaleDateString([], { month: "short", day: "2-digit" }) : "",
         round: r.round ?? "",
       };
     });

@@ -87,8 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "ATS Engine — Intelligent Applicant Tracking" },
       {
         property: "og:description",
-        content:
-          "AI resume matching, ranking, mock interviews, and personalized career roadmaps.",
+        content: "AI resume matching, ranking, mock interviews, and personalized career roadmaps.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

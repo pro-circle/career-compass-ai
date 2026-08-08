@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMockActive } from "@/hooks/use-mock-active";
-import { EMPTY_DATASET, MOCK_DATASET, type Dataset } from "@/lib/mock-dataset";
+import { EMPTY_DATASET, type Dataset } from "@/lib/dataset";
 import {
   listJobs,
   listCandidates,
@@ -17,21 +16,14 @@ import {
 /**
  * Single source of truth for page data.
  *
- * - Mock overlay OFF (default): every array comes from Supabase through
- *   server functions in `src/lib/data.functions.ts`.
- * - Mock overlay ON: the typed sample dataset is returned instead, without
- *   touching the backend. AI features are unaffected either way.
+ * Every array comes from Supabase through the server functions in
+ * `src/lib/data.functions.ts`.
  */
-export function useDataset(): Dataset & { loading: boolean; mock: boolean } {
-  const mock = useMockActive();
+export function useDataset(): Dataset & { loading: boolean } {
   const [live, setLive] = useState<Dataset>(EMPTY_DATASET);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (mock) {
-      setLoading(false);
-      return;
-    }
     let cancelled = false;
     setLoading(true);
     (async () => {
@@ -88,7 +80,6 @@ export function useDataset(): Dataset & { loading: boolean; mock: boolean } {
             unread: true,
           })),
         });
-
       } catch {
         if (!cancelled) setLive(EMPTY_DATASET);
       } finally {
@@ -98,8 +89,7 @@ export function useDataset(): Dataset & { loading: boolean; mock: boolean } {
     return () => {
       cancelled = true;
     };
-  }, [mock]);
+  }, []);
 
-  const data = mock ? MOCK_DATASET : live;
-  return { ...data, loading, mock };
+  return { ...live, loading };
 }

@@ -46,8 +46,14 @@ function OnboardingPage() {
           headline,
           location,
           yearsExp: Number(yearsExp) || 0,
-          targetRoles: targetRoles.split(",").map((s) => s.trim()).filter(Boolean),
-          skills: skills.split(",").map((s) => s.trim()).filter(Boolean),
+          targetRoles: targetRoles
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          skills: skills
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
           links: [],
           resumeText,
         },
@@ -67,22 +73,37 @@ function OnboardingPage() {
         <div className="mb-2 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-accent">
           <Sparkles className="size-3" /> Welcome to ATS Engine
         </div>
-        <h1 className="font-display text-3xl font-extrabold tracking-tight">
-          Tell us about you
-        </h1>
+        <h1 className="font-display text-3xl font-extrabold tracking-tight">Tell us about you</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Add your resume or a quick profile so we can personalize matches, mock
-          interviews, and roadmap suggestions.
+          Add your resume or a quick profile so we can personalize matches, mock interviews, and
+          roadmap suggestions.
         </p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-6 rounded-2xl border border-border bg-card p-6">
         <div className="grid gap-4 md:grid-cols-2">
-          <Field label="Full name *" value={fullName} onChange={setFullName} placeholder="Jordan Rivera" />
-          <Field label="Headline" value={headline} onChange={setHeadline} placeholder="Senior Product Designer" />
-          <Field label="Location" value={location} onChange={setLocation} placeholder="Brooklyn, NY · Remote" />
+          <Field
+            label="Full name *"
+            value={fullName}
+            onChange={setFullName}
+            placeholder="Jordan Rivera"
+          />
+          <Field
+            label="Headline"
+            value={headline}
+            onChange={setHeadline}
+            placeholder="Senior Product Designer"
+          />
+          <Field
+            label="Location"
+            value={location}
+            onChange={setLocation}
+            placeholder="Brooklyn, NY · Remote"
+          />
           <label className="block">
-            <span className="mb-1.5 block text-xs font-semibold text-foreground/80">Years of experience</span>
+            <span className="mb-1.5 block text-xs font-semibold text-foreground/80">
+              Years of experience
+            </span>
             <input
               type="number"
               min={0}
@@ -113,7 +134,12 @@ function OnboardingPage() {
             </span>
             <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border bg-surface px-2.5 py-1 text-[11px] font-semibold hover:bg-card">
               <Wand2 className="size-3" /> Upload
-              <input type="file" accept=".txt,.md,text/plain" onChange={onFile} className="hidden" />
+              <input
+                type="file"
+                accept=".txt,.md,text/plain"
+                onChange={onFile}
+                className="hidden"
+              />
             </label>
           </div>
           <textarea
@@ -130,7 +156,13 @@ function OnboardingPage() {
             disabled={busy}
             className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 disabled:opacity-60"
           >
-            {busy ? "Saving…" : (<>Continue to workspace <Rocket className="size-4" /></>)}
+            {busy ? (
+              "Saving…"
+            ) : (
+              <>
+                Continue to workspace <Rocket className="size-4" />
+              </>
+            )}
           </button>
         </div>
       </form>

@@ -103,9 +103,7 @@ function NewJob() {
         },
       });
       setPublished({ id: res.id, title: form.title.trim() });
-      toast.success(
-        status === "Open" ? `${res.id} published` : `${res.id} saved as draft`,
-      );
+      toast.success(status === "Open" ? `${res.id} published` : `${res.id} saved as draft`);
       router.invalidate();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not create requisition");
@@ -149,8 +147,8 @@ function NewJob() {
               {published.title} · {published.id}
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Share this link anywhere — LinkedIn, email, your own site. Every application
-              lands straight in this pipeline.
+              Share this link anywhere — LinkedIn, email, your own site. Every application lands
+              straight in this pipeline.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <ShareLink jobId={published.id} />
@@ -332,8 +330,8 @@ function NewJob() {
           <div className="p-5">
             <div className="mb-3 flex items-start gap-2 text-xs text-foreground/80">
               <Sparkles className="mt-0.5 size-4 shrink-0 text-brand" />
-              Already have this role posted elsewhere? Paste the URL and the agent fills
-              this form for you.
+              Already have this role posted elsewhere? Paste the URL and the agent fills this form
+              for you.
             </div>
             <div className="relative mb-2">
               <Link2 className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />

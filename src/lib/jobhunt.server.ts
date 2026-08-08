@@ -23,15 +23,10 @@ import {
 type Ctx = { userId: string; db: any | null };
 
 export async function huntCtx(): Promise<Ctx> {
-  const { getAppSession, DEMO_CANDIDATE_ID } = await import(
-    "@/lib/session.server"
-  );
-  const { getSupabaseAdmin } = await import(
-    "@/integrations/supabase/client.server"
-  );
-  const session = await getAppSession();
+  const { requireUserId } = await import("@/lib/session.server");
+  const { getSupabaseAdmin } = await import("@/integrations/supabase/client.server");
   return {
-    userId: session.data.userId ?? DEMO_CANDIDATE_ID,
+    userId: await requireUserId(),
     db: getSupabaseAdmin(),
   };
 }
@@ -111,9 +106,7 @@ async function loadSettings(db: any, userId: string): Promise<HuntSettings> {
 async function loadProfile(db: any, userId: string) {
   const { data } = await db
     .from("profiles")
-    .select(
-      "full_name,headline,location,skills,target_roles,years_exp,resume_text,links",
-    )
+    .select("full_name,headline,location,skills,target_roles,years_exp,resume_text,links")
     .eq("id", userId)
     .maybeSingle();
   return (data ?? {}) as Record<string, any>;
@@ -233,16 +226,12 @@ export async function getState(): Promise<HuntState> {
   };
 }
 
-export async function saveSettings(
-  patch: Partial<HuntSettings>,
-): Promise<HuntSettings> {
+export async function saveSettings(patch: Partial<HuntSettings>): Promise<HuntSettings> {
   const { userId, db } = await huntCtx();
   if (!db) return { ...DEFAULT_HUNT_SETTINGS, ...patch };
   const current = await loadSettings(db, userId);
   const next: HuntSettings = { ...current, ...patch };
-  await db
-    .from("job_hunt_settings")
-    .upsert(settingsToRow(userId, next), { onConflict: "user_id" });
+  await db.from("job_hunt_settings").upsert(settingsToRow(userId, next), { onConflict: "user_id" });
   return next;
 }
 
@@ -260,7 +249,9 @@ async function submitApplication(
     job_id: job.id,
     job_title: job.title,
     company: job.department || job.company || "This company",
-    logo: String(job.title ?? "AT").slice(0, 2).toUpperCase(),
+    logo: String(job.title ?? "AT")
+      .slice(0, 2)
+      .toUpperCase(),
     applied_on: new Date().toISOString().slice(0, 10),
     stage: "Applied",
     progress: 15,
@@ -278,11 +269,7 @@ async function submitApplication(
   return appId;
 }
 
-async function writeLog(
-  db: any,
-  userId: string,
-  entry: HuntLogEntry,
-): Promise<void> {
+async function writeLog(db: any, userId: string, entry: HuntLogEntry): Promise<void> {
   await db.from("job_hunt_log").insert({
     id: entry.id,
     user_id: userId,
@@ -371,12 +358,7 @@ export async function runPass(): Promise<HuntPassResult> {
         createdAt: new Date().toISOString(),
       };
       await writeLog(db, userId, entry);
-      await notify(
-        db,
-        userId,
-        `Job Hunt applied to ${job.title} (${score}% match)`,
-        "application",
-      );
+      await notify(db, userId, `Job Hunt applied to ${job.title} (${score}% match)`, "application");
       result.applied.push(entry);
       known.add(norm(job.id));
     } else {
@@ -441,10 +423,7 @@ export async function decideProposal(
   }
 
   if (decision === "deny") {
-    await db
-      .from("job_hunt_proposals")
-      .update({ status: "denied" })
-      .eq("id", proposalId);
+    await db.from("job_hunt_proposals").update({ status: "denied" }).eq("id", proposalId);
     await writeLog(db, userId, {
       id: `LOG-${Date.now().toString(36)}`,
       jobTitle: p.job_title ?? "",
@@ -457,11 +436,7 @@ export async function decideProposal(
     return { ok: true, message: "Dismissed — the agent will not apply." };
   }
 
-  const { data: job } = await db
-    .from("jobs")
-    .select("*")
-    .eq("id", p.job_id)
-    .maybeSingle();
+  const { data: job } = await db.from("jobs").select("*").eq("id", p.job_id).maybeSingle();
   if (!job) return { ok: false, message: "That role is no longer listed." };
 
   const { data: dupe } = await db
@@ -471,10 +446,7 @@ export async function decideProposal(
     .eq("job_id", job.id)
     .maybeSingle();
   if (dupe) {
-    await db
-      .from("job_hunt_proposals")
-      .update({ status: "applied" })
-      .eq("id", proposalId);
+    await db.from("job_hunt_proposals").update({ status: "applied" }).eq("id", proposalId);
     return { ok: false, message: "You already applied to this role." };
   }
 
@@ -487,10 +459,7 @@ export async function decideProposal(
   );
   if (!appId) return { ok: false, message: "Could not submit the application." };
 
-  await db
-    .from("job_hunt_proposals")
-    .update({ status: "applied" })
-    .eq("id", proposalId);
+  await db.from("job_hunt_proposals").update({ status: "applied" }).eq("id", proposalId);
   await writeLog(db, userId, {
     id: appId,
     jobTitle: p.job_title ?? "",
@@ -500,12 +469,7 @@ export async function decideProposal(
     reason: "Approved by you",
     createdAt: new Date().toISOString(),
   });
-  await notify(
-    db,
-    userId,
-    `Application submitted — ${p.job_title}`,
-    "application",
-  );
+  await notify(db, userId, `Application submitted — ${p.job_title}`, "application");
   return { ok: true, message: `Applied to ${p.job_title}.` };
 }
 
@@ -550,12 +514,8 @@ export async function draftApplication(input: {
     settings.useResume && profile.resume_text
       ? `RESUME:\n${String(profile.resume_text).slice(0, 6000)}`
       : "",
-    settings.usePortfolio && settings.portfolioUrl
-      ? `PORTFOLIO: ${settings.portfolioUrl}`
-      : "",
-    settings.useGithub && settings.githubUrl
-      ? `GITHUB: ${settings.githubUrl}`
-      : "",
+    settings.usePortfolio && settings.portfolioUrl ? `PORTFOLIO: ${settings.portfolioUrl}` : "",
+    settings.useGithub && settings.githubUrl ? `GITHUB: ${settings.githubUrl}` : "",
     profile.links ? `LINKS: ${JSON.stringify(profile.links)}` : "",
   ]
     .filter(Boolean)

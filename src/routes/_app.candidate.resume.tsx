@@ -4,6 +4,7 @@ import { PageHeader } from "@/routes/_app";
 import { SectionCard } from "@/components/dashboard/primitives";
 import { UploadCloud, FileText, Wand2, Languages, Sparkles, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useProfile } from "@/hooks/use-profile";
 
 type Tab = "upload" | "builder" | "optimizer" | "translator";
 
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/_app/candidate/resume")({
 
 function ResumeStudio() {
   const [tab, setTab] = useState<Tab>("optimizer");
+  const { profile, resume } = useProfile();
   const [score, setScore] = useState(72);
   const [optimizing, setOptimizing] = useState(false);
 
@@ -74,7 +76,15 @@ function ResumeStudio() {
         <div className="grid gap-6 lg:grid-cols-2">
           <SectionCard title="Details">
             <div className="space-y-3 p-5">
-              {["Full name", "Headline", "Location", "Summary", "Experience", "Education", "Skills"].map((f) => (
+              {[
+                "Full name",
+                "Headline",
+                "Location",
+                "Summary",
+                "Experience",
+                "Education",
+                "Skills",
+              ].map((f) => (
                 <div key={f}>
                   <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     {f}
@@ -105,32 +115,41 @@ function ResumeStudio() {
           <SectionCard title="Live preview">
             <div className="space-y-4 p-8 font-sans text-sm">
               <div>
-                <div className="font-display text-2xl font-extrabold">Jordan Rivera</div>
-                <div className="text-xs text-muted-foreground">Senior Product Designer · Brooklyn, NY</div>
-              </div>
-              <div className="border-t border-border pt-3">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Summary
+                <div className="font-display text-2xl font-extrabold">
+                  {profile?.fullName || "Your name"}
                 </div>
-                <p className="mt-1 text-xs text-foreground/80">
-                  Designer with 7 years crafting high-scale B2B systems at Linear and Figma…
-                </p>
-              </div>
-              <div className="border-t border-border pt-3">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Experience
+                <div className="text-xs text-muted-foreground">
+                  {[profile?.headline, profile?.location].filter(Boolean).join(" · ") ||
+                    "Add a headline in onboarding"}
                 </div>
-                <div className="mt-2 space-y-2">
-                  <div>
-                    <div className="text-xs font-semibold">Senior Designer · Linear</div>
-                    <div className="text-[10px] text-muted-foreground">2022 — Present</div>
+              </div>
+              {(resume?.summary || profile?.resumeText) && (
+                <div className="border-t border-border pt-3">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Summary
                   </div>
-                  <div>
-                    <div className="text-xs font-semibold">Product Designer · Figma</div>
-                    <div className="text-[10px] text-muted-foreground">2019 — 2022</div>
+                  <p className="mt-1 text-xs text-foreground/80">
+                    {resume?.summary ?? profile?.resumeText.slice(0, 240)}
+                  </p>
+                </div>
+              )}
+              {!!resume?.experience?.length && (
+                <div className="border-t border-border pt-3">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Experience
+                  </div>
+                  <div className="mt-2 space-y-2">
+                    {resume.experience.slice(0, 5).map((e, i) => (
+                      <div key={i}>
+                        <div className="text-xs font-semibold">
+                          {[e.title, e.company].filter(Boolean).join(" · ")}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">{e.dates}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </SectionCard>
         </div>
@@ -142,7 +161,14 @@ function ResumeStudio() {
             <div className="p-6 text-center">
               <div className="relative mx-auto grid size-36 place-items-center">
                 <svg className="absolute inset-0" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="42" stroke="var(--surface)" strokeWidth="8" fill="none" />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="42"
+                    stroke="var(--surface)"
+                    strokeWidth="8"
+                    fill="none"
+                  />
                   <circle
                     cx="50"
                     cy="50"
@@ -187,10 +213,26 @@ function ResumeStudio() {
           <SectionCard title="AI recommendations" className="lg:col-span-2">
             <div className="divide-y divide-border">
               {[
-                { done: score >= 96, title: "Add quantifiable impact metrics", body: "Rewrite 3 bullets with numbers (e.g. shipped v2 to 40k users)." },
-                { done: score >= 96, title: "Strengthen keyword density", body: "Add: 'design systems', 'component library', 'a11y'." },
-                { done: true, title: "Fix section ordering", body: "Move 'Experience' above 'Education' for senior roles." },
-                { done: true, title: "Improve action verbs", body: "Replaced 'worked on' with 'shipped', 'led', 'owned'." },
+                {
+                  done: score >= 96,
+                  title: "Add quantifiable impact metrics",
+                  body: "Rewrite 3 bullets with numbers (e.g. shipped v2 to 40k users).",
+                },
+                {
+                  done: score >= 96,
+                  title: "Strengthen keyword density",
+                  body: "Add: 'design systems', 'component library', 'a11y'.",
+                },
+                {
+                  done: true,
+                  title: "Fix section ordering",
+                  body: "Move 'Experience' above 'Education' for senior roles.",
+                },
+                {
+                  done: true,
+                  title: "Improve action verbs",
+                  body: "Replaced 'worked on' with 'shipped', 'led', 'owned'.",
+                },
               ].map((r, i) => (
                 <div key={i} className="flex gap-3 p-4">
                   <div
@@ -199,7 +241,9 @@ function ResumeStudio() {
                     {r.done ? <Check className="size-3" /> : <Sparkles className="size-3" />}
                   </div>
                   <div>
-                    <div className={`text-sm font-semibold ${r.done ? "line-through decoration-accent/50" : ""}`}>
+                    <div
+                      className={`text-sm font-semibold ${r.done ? "line-through decoration-accent/50" : ""}`}
+                    >
                       {r.title}
                     </div>
                     <div className="text-xs text-muted-foreground">{r.body}</div>

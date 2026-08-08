@@ -2,10 +2,12 @@
  * Server-only multi-provider AI router.
  *
  * Providers, in order of preference:
- *   1. Groq (openai/gpt-oss-120b) across a pool of up to 3 API keys.
- *      Keys are round-robined; a key that fails (429 / 5xx / auth) is put in
- *      a short cooldown and the next key is used.
- *   2. Google Gemini (gemini-2.5-flash) as the fallback provider.
+ *   1. Google Gemini (gemini-2.5-flash) — the primary model for every
+ *      generation in the app (assistant, resume, cover letter, interview,
+ *      job parsing, matching). Streaming by default.
+ *   2. Groq (openai/gpt-oss-120b) across a pool of up to 3 API keys as a
+ *      failover. Keys are round-robined; a key that fails (429 / 5xx / auth)
+ *      goes into a short cooldown and the next key is used.
  *
  * Live data: `runAgent()` automatically routes to Gemini with Google Search
  * grounding whenever the request looks like it needs current information
@@ -57,9 +59,7 @@ function groqModel(key: string): LanguageModel {
 }
 
 export function geminiKey(): string | undefined {
-  return (
-    serverEnv("GEMINI_API_KEY") || serverEnv("GOOGLE_GENERATIVE_AI_API_KEY")
-  );
+  return serverEnv("GEMINI_API_KEY") || serverEnv("GOOGLE_GENERATIVE_AI_API_KEY");
 }
 
 export function geminiModel(): LanguageModel | null {
@@ -82,17 +82,17 @@ export type Attempt = {
   key?: string;
 };
 
-/** Ordered list of provider attempts for a single request. */
+/** Ordered list of provider attempts for a single request (Gemini first). */
 export function providerChain(): Attempt[] {
   const chain: Attempt[] = [];
+  const gem = geminiModel();
+  if (gem) chain.push({ provider: "gemini", model: gem });
   const keys = healthyGroqKeys();
   for (let i = 0; i < keys.length; i++) {
     const key = keys[(cursor + i) % keys.length];
     chain.push({ provider: "groq", model: groqModel(key), key });
   }
   cursor = keys.length ? (cursor + 1) % keys.length : 0;
-  const gem = geminiModel();
-  if (gem) chain.push({ provider: "gemini", model: gem });
   return chain;
 }
 
@@ -105,17 +105,36 @@ export function primaryModel(): Attempt {
   const chain = providerChain();
   if (!chain.length) {
     throw new Error(
-      "No AI provider configured. Set GROQ_API_KEY_1/2/3 or GEMINI_API_KEY in .env.",
+      "No AI provider configured. Set GEMINI_API_KEY (primary) or GROQ_API_KEY_1/2/3.",
     );
   }
   return chain[0];
 }
 
 const LIVE_HINTS = [
-  "latest", "current", "today", "this week", "this year", "right now",
-  "recent", "news", "trend", "market rate", "salary range", "hiring now",
-  "who is hiring", "2025", "2026", "benchmark", "average salary", "glassdoor",
-  "levels.fyi", "funding", "layoff", "stock", "open roles",
+  "latest",
+  "current",
+  "today",
+  "this week",
+  "this year",
+  "right now",
+  "recent",
+  "news",
+  "trend",
+  "market rate",
+  "salary range",
+  "hiring now",
+  "who is hiring",
+  "2025",
+  "2026",
+  "benchmark",
+  "average salary",
+  "glassdoor",
+  "levels.fyi",
+  "funding",
+  "layoff",
+  "stock",
+  "open roles",
 ];
 
 export function needsLiveData(text: string): boolean {
@@ -133,7 +152,7 @@ export async function runAgent(opts: {
   forceSearch?: boolean;
   allowSearch?: boolean;
 }): Promise<{ text: string; provider: string; grounded: boolean }> {
-  const { generateText, stepCountIs } = await import("ai");
+  const { streamText, stepCountIs } = await import("ai");
   const wantsSearch =
     opts.forceSearch ||
     (opts.allowSearch !== false && needsLiveData(`${opts.system ?? ""} ${opts.prompt}`));
@@ -143,13 +162,14 @@ export async function runAgent(opts: {
     const tools = searchTools();
     if (gem && tools) {
       try {
-        const { text } = await generateText({
+        const result = streamText({
           model: gem,
           system: opts.system,
           prompt: opts.prompt,
           tools,
           stopWhen: stepCountIs(5),
         } as never);
+        const text = await result.text;
         if (text?.trim()) return { text, provider: "gemini+search", grounded: true };
       } catch {
         /* fall through to the normal chain */
@@ -160,17 +180,18 @@ export async function runAgent(opts: {
   const chain = providerChain();
   if (!chain.length) {
     throw new Error(
-      "No AI provider configured. Set GROQ_API_KEY_1/2/3 or GEMINI_API_KEY in .env.",
+      "No AI provider configured. Set GEMINI_API_KEY (primary) or GROQ_API_KEY_1/2/3.",
     );
   }
   let lastErr: unknown;
   for (const attempt of chain) {
     try {
-      const { text } = await generateText({
+      const result = streamText({
         model: attempt.model,
         system: opts.system,
         prompt: opts.prompt,
       });
+      const text = await result.text;
       if (text?.trim()) return { text, provider: attempt.provider, grounded: false };
     } catch (err) {
       lastErr = err;

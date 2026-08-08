@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/routes/_app";
 import { SectionCard } from "@/components/dashboard/primitives";
 import { listOpenJobs, applyToJob } from "@/lib/apply.functions";
-import { useMockActive } from "@/hooks/use-mock-active";
-import { MOCK_DATASET } from "@/lib/mock-dataset";
 import type { Job } from "@/lib/types";
 import { Search, MapPin, Briefcase, Loader2, Check, Building2 } from "lucide-react";
 import { toast } from "sonner";
@@ -24,7 +22,6 @@ export const Route = createFileRoute("/_app/candidate/careers")({
 });
 
 function CandidateCareers() {
-  const mock = useMockActive();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -32,11 +29,6 @@ function CandidateCareers() {
   const [applied, setApplied] = useState<string[]>([]);
 
   useEffect(() => {
-    if (mock) {
-      setJobs(MOCK_DATASET.jobs.filter((j) => j.status === "Open"));
-      setLoading(false);
-      return;
-    }
     let cancelled = false;
     setLoading(true);
     listOpenJobs()
@@ -46,14 +38,9 @@ function CandidateCareers() {
     return () => {
       cancelled = true;
     };
-  }, [mock]);
+  }, []);
 
   async function apply(job: Job) {
-    if (mock) {
-      setApplied((a) => [...a, job.id]);
-      toast.success(`Applied to ${job.title} (sample data)`);
-      return;
-    }
     setApplying(job.id);
     try {
       const res = await applyToJob({ data: { jobId: job.id } });
@@ -104,8 +91,8 @@ function CandidateCareers() {
       ) : filtered.length === 0 ? (
         <SectionCard>
           <div className="p-12 text-center text-sm text-muted-foreground">
-            No open roles right now. Check back soon — new requisitions appear here the
-            moment a recruiter publishes them.
+            No open roles right now. Check back soon — new requisitions appear here the moment a
+            recruiter publishes them.
           </div>
         </SectionCard>
       ) : (

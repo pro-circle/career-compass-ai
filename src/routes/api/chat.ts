@@ -23,7 +23,7 @@ export const Route = createFileRoute("/api/chat")({
 
         if (!hasAnyProvider()) {
           return new Response(
-            "No AI provider configured. Set GROQ_API_KEY_1/2/3 or GEMINI_API_KEY in .env.",
+            "No AI provider configured. Set GEMINI_API_KEY (primary) or GROQ_API_KEY_1/2/3.",
             { status: 500 },
           );
         }
@@ -41,9 +41,7 @@ export const Route = createFileRoute("/api/chat")({
             body.system ??
             "You are ATS Engine, an intelligent career and hiring assistant. Be concise, warm, and specific. Use markdown. When you use web results, cite the source names inline.",
           messages: await convertToModelMessages(messages),
-          ...(grounded && tools
-            ? { tools, stopWhen: stepCountIs(5) }
-            : {}),
+          ...(grounded && tools ? { tools, stopWhen: stepCountIs(5) } : {}),
           onError: ({ error }: { error: unknown }) => {
             if (attempt?.key) markKeyFailed(attempt.key);
             console.error("[chat] stream error", error);

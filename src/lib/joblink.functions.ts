@@ -64,18 +64,17 @@ async function extractJobWithAI(url: string, text: string): Promise<ParsedJob> {
 }
 
 export const parseJobUrl = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => urlInput.parse(d))
+  .validator((d: unknown) => urlInput.parse(d))
   .handler(async ({ data }): Promise<ParsedJob> => {
     const text = await fetchPageText(data.url);
     return extractJobWithAI(data.url, text);
   });
 
 export const importJobFromUrl = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => urlInput.parse(d))
+  .validator((d: unknown) => urlInput.parse(d))
   .handler(async ({ data }) => {
-    const { getAppSession, DEMO_EMPLOYER_ID } = await import("@/lib/session.server");
-    const session = await getAppSession();
-    const employerId = session.data.userId ?? DEMO_EMPLOYER_ID;
+    const { requireUserId } = await import("@/lib/session.server");
+    const employerId = await requireUserId();
 
     const text = await fetchPageText(data.url);
     const job = await extractJobWithAI(data.url, text);
@@ -141,11 +140,10 @@ function looksLikeJob(text: string, title: string): boolean {
 }
 
 export const evaluateJobUrl = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => urlInput.parse(d))
+  .validator((d: unknown) => urlInput.parse(d))
   .handler(async ({ data }) => {
-    const { getAppSession, DEMO_CANDIDATE_ID } = await import("@/lib/session.server");
-    const session = await getAppSession();
-    const userId = session.data.userId ?? DEMO_CANDIDATE_ID;
+    const { requireUserId } = await import("@/lib/session.server");
+    const userId = await requireUserId();
 
     const { fetchReadableText } = await import("@/lib/linkfetch.server");
     const { text: pageText, preview } = await fetchReadableText(data.url);

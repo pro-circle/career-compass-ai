@@ -61,8 +61,20 @@ function Analytics() {
                     fontSize: 12,
                   }}
                 />
-                <Area type="monotone" dataKey="applications" stroke="var(--brand)" fill="url(#app)" strokeWidth={2} />
-                <Area type="monotone" dataKey="hires" stroke="var(--accent)" fill="url(#hire)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="applications"
+                  stroke="var(--brand)"
+                  fill="url(#app)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="hires"
+                  stroke="var(--accent)"
+                  fill="url(#hire)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>

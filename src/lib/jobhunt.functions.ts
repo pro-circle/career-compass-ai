@@ -1,11 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import type {
-  DraftedApplication,
-  HuntPassResult,
-  HuntSettings,
-  HuntState,
-} from "./jobhunt.types";
+import type { DraftedApplication, HuntPassResult, HuntSettings, HuntState } from "./jobhunt.types";
 
 export const getJobHunt = createServerFn({ method: "GET" }).handler(
   async (): Promise<HuntState> => {
@@ -15,7 +10,7 @@ export const getJobHunt = createServerFn({ method: "GET" }).handler(
 );
 
 export const updateJobHunt = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z
       .object({
         enabled: z.boolean().optional(),
@@ -46,7 +41,7 @@ export const runJobHunt = createServerFn({ method: "POST" }).handler(
 );
 
 export const decideJobHuntProposal = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z
       .object({
         id: z.string().min(1),
@@ -60,7 +55,7 @@ export const decideJobHuntProposal = createServerFn({ method: "POST" })
   });
 
 export const draftJobApplication = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) =>
+  .validator((d: unknown) =>
     z
       .object({
         url: z.string().max(2000).optional(),

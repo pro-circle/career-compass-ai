@@ -10,8 +10,7 @@ let cached: SupabaseClient | null | undefined;
 export function getSupabaseAdmin(): SupabaseClient | null {
   if (cached !== undefined) return cached;
   const url = serverEnv("SUPABASE_URL") ?? serverEnv("VITE_SUPABASE_URL");
-  const key =
-    serverEnv("SUPABASE_SERVICE_ROLE_KEY") ?? serverEnv("SUPABASE_SECRET_KEY");
+  const key = serverEnv("SUPABASE_SERVICE_ROLE_KEY") ?? serverEnv("SUPABASE_SECRET_KEY");
   if (!url || !key) {
     cached = null;
     return null;

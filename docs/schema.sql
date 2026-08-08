@@ -1,6 +1,6 @@
--- ATS Engine — schema + seed
--- Run this in the Supabase SQL editor (or `supabase db push`).
--- Re-runnable: all inserts use ON CONFLICT DO NOTHING/UPDATE.
+-- ATS Engine — complete database schema (Supabase / Postgres).
+-- Run once in the Supabase SQL editor. Safe to re-run (idempotent DDL).
+-- No seed / demo rows: every row in this app is created by real users.
 
 create extension if not exists "pgcrypto";
 
@@ -17,7 +17,8 @@ do $$ begin
 exception when duplicate_object then null; end $$;
 
 create table if not exists public.profiles (
-  id uuid primary key,
+  id uuid primary key references auth.users(id) on delete cascade,
+  email text,
   role public.app_role not null,
   full_name text,
   headline text,
@@ -145,90 +146,6 @@ create table if not exists public.assistant_messages (
 grant all on public.assistant_messages to service_role;
 alter table public.assistant_messages enable row level security;
 
--- ============================================================
--- SEED
--- ============================================================
-insert into public.profiles (id, role, full_name, headline, onboarded) values
-  ('11111111-1111-1111-1111-111111111111','employer','Julianne Deitch','Head of Talent · ATS Engine',true),
-  ('22222222-2222-2222-2222-222222222222','candidate','Jordan Rivera','Senior Designer',false)
-on conflict (id) do nothing;
-
-insert into public.jobs (id,employer_id,title,department,location,type,status,applicants,new_count,match_avg,salary,description,tags) values
-  ('JOB-4092','11111111-1111-1111-1111-111111111111','Senior Product Designer','Design','Remote · US','Full-time','Open',82,14,78,'$180k – $220k','Lead end-to-end product design for our recruiting workspace.','{"Figma","Design Systems","B2B SaaS"}'),
-  ('JOB-4088','11111111-1111-1111-1111-111111111111','Senior Staff Engineer','Engineering','Remote · Global','Full-time','Open',124,21,84,'$240k – $310k','Own architecture for our ranking pipeline.','{"TypeScript","Rust","Distributed Systems"}'),
-  ('JOB-4083','11111111-1111-1111-1111-111111111111','Machine Learning Engineer','AI','New York, NY','Full-time','Open',96,8,71,'$190k – $250k','Embedding models and semantic search.','{"PyTorch","LLMs","Embeddings"}'),
-  ('JOB-4071','11111111-1111-1111-1111-111111111111','Head of Talent','People','San Francisco, CA','Full-time','Paused',47,0,66,'$210k – $260k','Build our talent function.','{"Recruiting","Ops","Leadership"}'),
-  ('JOB-4065','11111111-1111-1111-1111-111111111111','Growth Marketing Lead','Marketing','Remote · US','Full-time','Closed',210,0,72,'$160k – $200k','Top-of-funnel across paid, content, lifecycle.','{"B2B","Paid","Lifecycle"}'),
-  ('JOB-4059','11111111-1111-1111-1111-111111111111','Frontend Engineer, Platform','Engineering','Remote · EU','Full-time','Open',168,3,76,'$150k – $195k','React, TanStack, beautiful design system.','{"React","TypeScript","TanStack"}')
-on conflict (id) do nothing;
-
-insert into public.candidates (id,name,title,company,location,years,match_score,skills,strengths,gaps,status,applied_for,ai_insight,portfolio,initials,email) values
-  ('C-8811','Sarah Chen','Senior Product Designer','Ex-Linear, Uber','Brooklyn, NY',8,98,'{"Figma","Design Systems","Prototyping","Motion","Research"}','{"Design Systems mastery","Cross-functional lead","Craft at scale"}','{"Limited B2B recruiting domain"}','Final Round','Senior Product Designer','Matches 9/10 core competencies. Recommend fast-track to final panel.','[{"label":"sarahchen.design","url":"#"}]','SC','sarah.chen@mail.co'),
-  ('C-8807','Marcus Thorne','Senior Designer','Stripe','Remote · CA',6,94,'{"Figma","Interaction","Prototyping","Brand"}','{"Payments UX","Systems thinking"}','{"No formal team lead experience"}','Interviewing','Senior Product Designer','Portfolio depth in top 5% of pool.','[{"label":"marcusthorne.co","url":"#"}]','MT','marcus@mail.co'),
-  ('C-8802','Elena Rostova','Staff Engineer','Ex-Stripe','Berlin, DE',9,96,'{"Rust","Go","Distributed Systems","PostgreSQL"}','{"Deep systems background","Rust proficiency"}','{"Prefers async-only teams"}','Screening','Senior Staff Engineer','Highest-scoring active applicant.','[{"label":"github.com/elenar","url":"#"}]','ER','elena@mail.co'),
-  ('C-8798','Liam Henderson','Principal Engineer','Vercel','London, UK',11,91,'{"TypeScript","Edge Runtime","React","Perf"}','{"Perf & DX leadership"}','{"Limited Rust exposure"}','Interviewing','Senior Staff Engineer','Excellent DX leadership signal.','[{"label":"liamh.dev","url":"#"}]','LH','liam@mail.co'),
-  ('C-8790','Anika Sharma','Product Designer','Notion','Toronto, CA',5,86,'{"Figma","Editorial","Micro-interactions"}','{"Editorial systems","Fast iteration"}','{"No leadership scope yet"}','New','Senior Product Designer','Recommend screen call.','[{"label":"anika.co","url":"#"}]','AS','anika@mail.co'),
-  ('C-8785','David Grant','ML Engineer','Anthropic','SF Bay Area',4,89,'{"PyTorch","Embeddings","RAG","Python"}','{"LLM productization"}','{"Limited ranking systems experience"}','Screening','Machine Learning Engineer','Aligns tightly with our ranking roadmap.','[{"label":"github.com/dgrant","url":"#"}]','DG','david@mail.co'),
-  ('C-8779','Priya Patel','Frontend Engineer','Figma','Remote · IN',6,83,'{"React","TanStack","Vite","TS"}','{"Design engineer profile"}','{"No SSR-at-scale experience"}','New','Frontend Engineer, Platform','Rare design-engineer bridge.','[{"label":"priya.dev","url":"#"}]','PP','priya@mail.co'),
-  ('C-8770','Jonas Weber','Full-stack Engineer','Independent','Munich, DE',7,74,'{"Next.js","Postgres","tRPC"}','{"Ships fast"}','{"Less depth on infra"}','Rejected','Senior Staff Engineer','Solid generalist, role favors distributed systems.','[{"label":"jonasw.dev","url":"#"}]','JW','jonas@mail.co')
-on conflict (id) do nothing;
-
-insert into public.applications (id,candidate_id,job_title,company,logo,applied_on,stage,progress,match_score,next_step) values
-  ('APP-2201','22222222-2222-2222-2222-222222222222','Senior Product Designer','Linear','LN','Oct 12','Interview',60,96,'Portfolio review · Oct 18, 2:00 PM'),
-  ('APP-2189','22222222-2222-2222-2222-222222222222','Product Designer','Vercel','▲','Oct 08','Screening',30,89,'Recruiter call · scheduling'),
-  ('APP-2178','22222222-2222-2222-2222-222222222222','Design Lead','Stripe','S','Oct 04','Offer',90,93,'Offer review · Oct 20'),
-  ('APP-2163','22222222-2222-2222-2222-222222222222','Senior Designer','Notion','N','Sep 28','Rejected',100,71,null),
-  ('APP-2140','22222222-2222-2222-2222-222222222222','Staff Designer','Figma','F','Sep 20','Applied',10,84,null)
-on conflict (id) do nothing;
-
-insert into public.job_matches (id,candidate_id,title,company,location,salary,match_score,posted_ago,skills,reason,logo) values
-  ('M-1','22222222-2222-2222-2222-222222222222','Senior Product Designer','Linear','Remote · US','$190k – $230k',96,'1 day ago','{"Figma","Systems","Motion"}','9/10 skills match.','LN'),
-  ('M-2','22222222-2222-2222-2222-222222222222','Design Lead','Stripe','Remote · Global','$220k – $280k',93,'2 days ago','{"Leadership","Payments"}','Leadership scope matches your experience.','S'),
-  ('M-3','22222222-2222-2222-2222-222222222222','Product Designer','Vercel','Remote · EU','$170k – $210k',89,'3 days ago','{"React","DX","Docs"}','Design-engineer bridge — strong fit.','▲'),
-  ('M-4','22222222-2222-2222-2222-222222222222','Senior Designer','Notion','New York, NY','$180k – $220k',86,'5 days ago','{"Editorial","Systems"}','Editorial craft matches your case studies.','N'),
-  ('M-5','22222222-2222-2222-2222-222222222222','Staff Designer','Figma','San Francisco','$210k – $260k',84,'1 week ago','{"Tooling"}','Portfolio depth in top 8%.','F')
-on conflict (id) do nothing;
-
-insert into public.notifications (id,user_id,title,time,type) values
-  ('n1','11111111-1111-1111-1111-111111111111','Sarah Chen advanced to Final Round','12m ago','candidate'),
-  ('n2','11111111-1111-1111-1111-111111111111','3 new matches for Senior Staff Engineer','1h ago','match'),
-  ('n3','11111111-1111-1111-1111-111111111111','Interview with Marcus Thorne · Tomorrow 2:00 PM','3h ago','interview'),
-  ('cn1','22222222-2222-2222-2222-222222222222','New match: Senior Product Designer at Linear (96%)','5m ago','match'),
-  ('cn2','22222222-2222-2222-2222-222222222222','Interview scheduled with Linear · Oct 18','2h ago','interview'),
-  ('cn3','22222222-2222-2222-2222-222222222222','Offer received from Stripe','1d ago','offer')
-on conflict (id) do nothing;
-
-insert into public.skill_radar (candidate_id,skill,you,target) values
-  ('22222222-2222-2222-2222-222222222222','React',92,90),
-  ('22222222-2222-2222-2222-222222222222','TypeScript',88,90),
-  ('22222222-2222-2222-2222-222222222222','Systems Design',68,85),
-  ('22222222-2222-2222-2222-222222222222','Leadership',74,80),
-  ('22222222-2222-2222-2222-222222222222','Testing',60,75),
-  ('22222222-2222-2222-2222-222222222222','Perf',71,80)
-on conflict do nothing;
-
-insert into public.roadmap (id,candidate_id,week,title,detail,done,ord) values
-  ('r1','22222222-2222-2222-2222-222222222222','Week 1','Systems Design foundations','Read DDIA ch. 1–3.',true,1),
-  ('r2','22222222-2222-2222-2222-222222222222','Week 2','Leadership case studies','Draft 3 STAR-format stories.',true,2),
-  ('r3','22222222-2222-2222-2222-222222222222','Week 3','Testing depth','Ship 1 OSS PR with meaningful tests.',false,3),
-  ('r4','22222222-2222-2222-2222-222222222222','Week 4','Mock interview loop','Complete 4 AI mock interviews.',false,4)
-on conflict (id) do nothing;
-
-insert into public.analytics_metrics (label,value,delta,positive) values
-  ('Time to hire','18d','-4d',true),
-  ('Offer acceptance','92%','+5%',true),
-  ('Applicants / role','68','+12',true),
-  ('Interview → offer','34%','-2%',false)
-on conflict (label) do update set value=excluded.value, delta=excluded.delta, positive=excluded.positive;
-
-insert into public.funnel (stage,count,ord) values
-  ('Applied',820,1),('Screened',412,2),('Interview',168,3),('Final',62,4),('Offer',24,5)
-on conflict (stage) do update set count=excluded.count;
-
-insert into public.hiring_trend (month,hires,applications,ord) values
-  ('May',6,240,1),('Jun',8,310,2),('Jul',12,380,3),('Aug',9,420,4),('Sep',14,510,5),('Oct',11,480,6)
-on conflict (month) do update set hires=excluded.hires, applications=excluded.applications;
-
 -- ---------------------------------------------------------------------------
 -- Interviews + question bank (employer interviews page, candidate mock loop)
 -- ---------------------------------------------------------------------------
@@ -337,3 +254,22 @@ create index if not exists job_hunt_log_user_idx
   on public.job_hunt_log (user_id, created_at desc);
 alter table public.job_hunt_log enable row level security;
 grant all on public.job_hunt_log to service_role;
+
+-- ---------------------------------------------------------------------------
+-- Backfill for existing installs
+-- ---------------------------------------------------------------------------
+alter table public.profiles add column if not exists email text;
+
+-- ---------------------------------------------------------------------------
+-- Access model
+-- ---------------------------------------------------------------------------
+-- The app never talks to PostgREST from the browser. Every read/write goes
+-- through TanStack server functions using the service-role key, so RLS stays
+-- ON with no permissive policies except the two public ones above
+-- (jobs + analytics_metrics, used by the public careers / share pages).
+--
+-- If you later expose tables directly to the browser, add per-user policies:
+--   create policy "own rows" on public.applications
+--     for all to authenticated using (user_id = auth.uid())
+--     with check (user_id = auth.uid());
+-- and grant select/insert/update/delete on that table to authenticated.

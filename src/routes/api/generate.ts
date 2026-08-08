@@ -6,8 +6,8 @@ import { streamText, stepCountIs } from "ai";
  * mock-interview coach). Body: { prompt, system?, context?, search? }.
  *
  * Provider selection is handled by src/lib/ai-provider.server.ts:
- * Groq key pool -> Gemini fallback, with Google Search grounding whenever
- * the request needs live data.
+ * Gemini (primary) -> Groq key pool (failover), with Google Search grounding
+ * whenever the request needs live data.
  */
 export const Route = createFileRoute("/api/generate")({
   server: {
@@ -33,14 +33,12 @@ export const Route = createFileRoute("/api/generate")({
 
         if (!hasAnyProvider()) {
           return new Response(
-            "No AI provider configured. Set GROQ_API_KEY_1/2/3 or GEMINI_API_KEY in .env.",
+            "No AI provider configured. Set GEMINI_API_KEY (primary) or GROQ_API_KEY_1/2/3.",
             { status: 500 },
           );
         }
 
-        const prompt = body.context
-          ? `${body.context}\n\n---\n\n${body.prompt}`
-          : body.prompt;
+        const prompt = body.context ? `${body.context}\n\n---\n\n${body.prompt}` : body.prompt;
         const wantsLive = body.search || needsLiveData(prompt);
         const grounded = wantsLive ? geminiModel() : null;
         const tools = grounded ? searchTools() : undefined;
