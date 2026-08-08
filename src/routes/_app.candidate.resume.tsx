@@ -15,6 +15,7 @@ export const Route = createFileRoute("/_app/candidate/resume")({
 
 function ResumeStudio() {
   const [tab, setTab] = useState<Tab>("optimizer");
+  const { profile, resume } = useProfile();
   const [score, setScore] = useState(72);
   const [optimizing, setOptimizing] = useState(false);
 
