@@ -13,6 +13,12 @@ function EmployerDashboard() {
   const { analyticsMetrics, candidates, jobs } = useDataset();
   const openJobs = jobs.filter((j) => j.status === "Open");
   const topCandidates = [...candidates].sort((a, b) => b.matchScore - a.matchScore).slice(0, 4);
+  const top = topCandidates[0];
+  const avgScore = candidates.length
+    ? Math.round(candidates.reduce((s, c) => s + c.matchScore, 0) / candidates.length)
+    : 0;
+  const lead = top && avgScore ? Math.round(((top.matchScore - avgScore) / avgScore) * 100) : 0;
+  const newCount = candidates.filter((c) => c.status === "New").length;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -146,15 +152,30 @@ function EmployerDashboard() {
               <Sparkles className="size-4 text-background/60" />
             </div>
             <p className="text-sm leading-relaxed">
-              <strong className="text-accent">Sarah Chen</strong> exceeds the design pool
-              average by <strong>24%</strong> on systems-thinking signals. Recommend
-              scheduling a final panel this week.
+              {top ? (
+                <>
+                  <strong className="text-accent">{top.name}</strong> leads the pool at{" "}
+                  <strong>{top.matchScore}%</strong>
+                  {lead > 0 ? (
+                    <>
+                      {" "}
+                      — <strong>{lead}%</strong> above the {avgScore}% average
+                    </>
+                  ) : null}
+                  . Review the shortlist in the role workspace.
+                </>
+              ) : (
+                "No applicants yet. Post a role and the agent will start ranking candidates as they apply."
+              )}
             </p>
             <div className="mt-5 flex items-center gap-2 border-t border-white/10 pt-4">
               <TrendingUp className="size-4 text-accent" />
               <span className="text-xs text-background/70">
-                Pipeline health <strong className="text-background">strong</strong> — 14 new
-                elite matches this week.
+                Pipeline health{" "}
+                <strong className="text-background">
+                  {avgScore >= 80 ? "strong" : avgScore >= 60 ? "steady" : "building"}
+                </strong>{" "}
+                — {newCount} new applicant{newCount === 1 ? "" : "s"} awaiting screening.
               </span>
             </div>
           </div>
