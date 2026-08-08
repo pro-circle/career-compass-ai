@@ -1,198 +1,149 @@
 # Deploying ATS Engine
 
-This project ships in two waves. **Wave 1** (this repo, right now) is the SSR
-prototype you're running locally — great for development and demos. **Wave 2**
-(SPA on Firebase Spark) is the production deployment plan below.
+Two things must be live: **Supabase** (database + auth) and the **app**
+(static assets + SSR/server functions). The app is SSR — a static-only
+Firebase Hosting deploy will break every server function and `/api` route.
 
 ---
 
-## Architecture (target — Wave 2)
+## 1. Supabase
 
+1. Create a project at https://supabase.com.
+2. **SQL Editor → New query** → paste all of `docs/schema.sql` → **Run**.
+   It is idempotent and contains no demo rows.
+3. **Authentication → Providers → Email**: enable, and turn **Confirm email**
+   off for the first run (or wire your SMTP before going live).
+4. **Project Settings → API**, copy:
+   - Project URL → `SUPABASE_URL` and `VITE_SUPABASE_URL`
+   - `anon` key → `VITE_SUPABASE_ANON_KEY`
+   - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY` (server-only, never
+     expose)
+
+RLS stays enabled on every table. The app reaches Postgres only from server
+code with the service-role key, so no extra policies are needed beyond the
+two public ones already in the schema (`jobs`, `analytics_metrics`).
+
+---
+
+## 2. Environment variables
+
+Copy `.env.example` to `.env` and fill it in:
+
+```env
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=...
+VITE_SUPABASE_URL=https://xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=...
+GEMINI_API_KEY=...            # primary model, required
+GROQ_API_KEY_1=...            # optional failover
+SESSION_SECRET=<64+ random chars>
 ```
-┌───────────────────────────────┐         ┌───────────────────────────┐
-│  Firebase Hosting (Spark)     │         │  Supabase                 │
-│  - static SPA (index.html +   │◀───────▶│  - Postgres + Auth        │
-│    hashed JS/CSS)             │  anon   │  - RLS enforces role      │
-│  - no server code             │   key   │    access                 │
-└───────────────┬───────────────┘         └───────────────────────────┘
-                │
-                │  POST /chat, /generate, /joblink
-                ▼
-┌───────────────────────────────┐
-│  Cloudflare Worker            │
-│  - holds GROQ_API_KEY         │
-│  - streams Groq gpt-oss-120b  │
-└───────────────────────────────┘
-```
 
-**Why not put the Groq key in the Firebase env?** Firebase Hosting Spark serves
-static files only — any `VITE_*` env at build time is inlined into the JS
-bundle and readable by anyone. Cloud Functions on Spark also block outbound
-calls to non-Google APIs. Cloudflare Workers has a genuine free tier and can
-hold the secret.
-
----
-
-## Prerequisites
-
-1. **Node 20+**, `bun`, and the `gcloud`/`firebase-tools` CLIs.
-2. A Supabase project.
-3. A Cloudflare account (free tier — no card needed for Workers up to 100k
-   requests/day).
-4. A Groq API key from https://console.groq.com
-
----
-
-## Step 1 — Supabase
-
-1. Create a new project at https://supabase.com.
-2. Open the SQL editor and paste the contents of `docs/schema.sql`, then run.
-3. Authentication → Providers → enable **Email**.
-4. Authentication → Users → invite a user with email `user123@ats-engine.local`
-   and password `1234` (this is the demo account after Wave 2 auth migration).
-5. Copy **Project URL** and **anon key** from Settings → API.
-
----
-
-## Step 2 — Cloudflare AI Worker
-
-The Worker in `docs/ai-worker/` proxies Groq. Deploy it separately.
+Generate a session secret:
 
 ```bash
-cd docs/ai-worker
-npm i -g wrangler
-wrangler login
-wrangler secret put GROQ_API_KEY          # paste your Groq key when prompted
-wrangler secret put ALLOWED_ORIGINS       # e.g. https://your-app.web.app,http://localhost:8080
-wrangler deploy
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
 
-The command prints a URL like `https://ats-engine-ai.yourname.workers.dev`.
-Copy it — this is your `VITE_AI_ENDPOINT`.
-
----
-
-## Step 3 — SPA build
-
-Create `.env` in the project root:
-
-```
-VITE_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbG...
-VITE_AI_ENDPOINT=https://ats-engine-ai.yourname.workers.dev
-```
-
-Build the client bundle:
+Local dev reads `.env` through `src/lib/env.server.ts` (it parses the file
+directly, because Vite does not put unprefixed vars on `process.env`), so
+`vite dev` picks the keys up with no extra tooling.
 
 ```bash
-bun install
-bun run build
+bun install     # or npm install
+bun run dev     # http://localhost:8080
 ```
-
-Wave 2 will produce `dist/client/index.html` + hashed assets. Everything
-under `dist/client` is public — never put secrets in it.
 
 ---
 
-## Step 4 — Firebase Hosting
+## 3. Firebase deploy (SSR, error-free path)
+
+### 3.1 One-time setup
 
 ```bash
 npm i -g firebase-tools
 firebase login
-# edit .firebaserc — replace REPLACE_WITH_YOUR_FIREBASE_PROJECT_ID
-npm run deploy          # builds, then deploys hosting
 ```
 
-### `Error: Directory 'dist/client' for Hosting does not exist.`
+Edit `.firebaserc` and replace `REPLACE_WITH_YOUR_FIREBASE_PROJECT_ID` with
+your real project id.
 
-This means the deploy ran before a build. Two fixes are now in the repo:
+Requirements:
+- Firebase project on the **Blaze** plan (Cloud Functions need it).
+- Enable **Cloud Functions**, **Cloud Run**, **Artifact Registry** and
+  **Cloud Build** APIs in the Google Cloud console for that project.
 
-- `package.json` has `npm run deploy` = `vite build` + `firebase deploy --only hosting`.
-- `firebase.json` has a `predeploy` hook (`npm run build`), so even a plain
-  `firebase deploy --only hosting` builds first.
+### 3.2 Build for Firebase
 
-If you still hit it, run the build by hand and confirm the folder exists:
+The app builds with Nitro; the `firebase` preset emits `.output/public`
+(static) and `.output/server` (the SSR Cloud Function named `server`).
 
 ```bash
-npm run build
-ls dist/client/index.html    # must exist before deploying
+npm run build:firebase
 ```
 
-Never commit `dist/` — it is a build artifact and is regenerated on deploy.
+This is `cross-env NITRO_PRESET=firebase vite build`, so it works the same
+on Windows, macOS and Linux.
 
-Firebase prints your live URL: `https://<project>.web.app`. Copy that URL back
-into the Worker's `ALLOWED_ORIGINS` secret and redeploy the Worker if you
-tightened it.
+### 3.3 Set production secrets
 
-
----
-
-## Local dev
+Runtime secrets must exist in the deployed function, not just in `.env`:
 
 ```bash
-bun install
-cp .env.example .env    # then fill values
-bun run dev             # http://localhost:8080
+firebase functions:secrets:set SUPABASE_URL
+firebase functions:secrets:set SUPABASE_SERVICE_ROLE_KEY
+firebase functions:secrets:set GEMINI_API_KEY
+firebase functions:secrets:set GROQ_API_KEY_1
+firebase functions:secrets:set SESSION_SECRET
 ```
 
-The Wave 1 preview uses TanStack Start's SSR runtime with server functions.
-Wave 2 flips to SPA mode (config change) so the same source deploys to
-Firebase.
+`VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are baked into the client
+bundle at build time, so they only need to be in `.env` when you run
+`npm run build:firebase`.
+
+### 3.4 Deploy
+
+```bash
+npm run deploy        # build:firebase + firebase deploy
+```
+
+or explicitly:
+
+```bash
+firebase deploy --only hosting,functions:ssr
+```
+
+`firebase.json` is already configured: Hosting serves `.output/public` and
+rewrites everything else to the `server` function, so SSR pages,
+`createServerFn` RPC calls, and `/api/chat` + `/api/generate` streaming all
+work in production.
+
+### 3.5 Post-deploy checklist
+
+1. Open the Hosting URL — the landing page should SSR (view source shows
+   markup, not an empty div).
+2. Sign up with a real email; confirm a row appears in `public.profiles`.
+3. Open the Career Assistant and send a message — the response must stream
+   token by token (that proves `GEMINI_API_KEY` reached the function).
+4. Post a job as a recruiter and confirm the row lands in `public.jobs`.
+5. Turn the Job Hunt agent on in review mode and run one pass; check
+   `job_hunt_log` for entries.
+
+### Common failure causes
+
+| Symptom | Cause / fix |
+|---|---|
+| Blank page, 404 on every route | Hosting `public` not `.output/public`, or the `**` → `server` rewrite is missing |
+| `No AI provider configured` | `GEMINI_API_KEY` not set as a function secret |
+| Auth works locally, fails in prod | `SESSION_SECRET` or `SUPABASE_SERVICE_ROLE_KEY` missing from function secrets |
+| Deploy rejected | Project still on the Spark plan — upgrade to Blaze |
+| Streaming responses arrive all at once | A proxy/CDN buffering layer in front of Hosting; test the function URL directly |
 
 ---
 
-## Wave 2 migration checklist (not yet applied)
+## 4. Alternative: Firebase App Hosting
 
-- [ ] Vite/TanStack config: enable SPA prerender, drop server functions.
-- [ ] Replace `useSession` cookie auth (`src/lib/session.server.ts`,
-      `src/lib/auth.functions.ts`) with Supabase Auth calls from the browser.
-- [ ] Rewrite `src/lib/data.functions.ts` and
-      `src/lib/profile.functions.ts` as browser Supabase queries.
-- [ ] Route `_app.tsx` guard: use Supabase session, not the cookie.
-- [ ] Change `/api/chat`, `/api/generate`, `joblink` calls to `fetch(VITE_AI_ENDPOINT + "/chat")` etc.
-- [ ] `bun run build` must emit `dist/client/index.html` (SPA), not a Worker.
-- [ ] Firebase preview channel: `firebase hosting:channel:deploy preview`.
-
-Ping me when you're ready for Wave 2 and I'll do it in one pass.
-
----
-
-## Free-tier limits to watch
-
-| Service            | Free tier                              | Watch for                    |
-| ------------------ | -------------------------------------- | ---------------------------- |
-| Firebase Hosting   | 10 GB storage, 360 MB/day egress       | large images, heavy SPA size |
-| Supabase           | 500 MB DB, 50k MAU, 5 GB egress        | resume PDFs → move to Storage|
-| Cloudflare Workers | 100k req/day, 10ms CPU per req         | tight loops, big prompts     |
-| Groq               | Free tier per account, rate-limited    | burst chat traffic           |
-
----
-
-## Troubleshooting
-
-- **Blank page after deploy** → check the SPA rewrite in `firebase.json`.
-- **CORS error hitting Worker** → add your Firebase URL to `ALLOWED_ORIGINS`.
-- **`Invalid JWT` from Supabase** → you pasted the service-role key instead of
-  the anon key. Anon key only in the SPA.
-- **Groq 401** → wrangler secret didn't save; re-run `wrangler secret put GROQ_API_KEY`.
-
----
-
-## Important: SSR build output vs Firebase Spark
-
-`npm run build` produces:
-
-- `dist/client/` — hashed JS/CSS assets (this is what `firebase.json` publishes)
-- `dist/server/` — the SSR + server-function bundle (Cloudflare-Workers ready)
-
-The SSR build intentionally does **not** emit `dist/client/index.html`, so
-Firebase Hosting alone cannot render pages — it can only serve the static
-assets. On the Spark plan the recommended split is:
-
-1. Deploy `dist/server` to Cloudflare Workers (free tier):
-   `npx nitro deploy --prebuilt`
-2. Point your domain / Firebase Hosting at that Worker for HTML, and keep
-   Firebase Hosting for static assets and the AI proxy in `docs/ai-worker/`.
-
-Everything server-side (Supabase service key, Groq/Gemini keys) stays in the
-Worker environment — never in `dist/client`.
+If you prefer App Hosting (no manual preset), connect the GitHub repo in the
+Firebase console, set the build command to `npm run build`, the output to
+`.output`, and add the same secrets in the App Hosting settings. The rest of
+the app is unchanged.
