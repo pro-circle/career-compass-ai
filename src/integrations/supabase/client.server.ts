@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { serverEnv } from "@/lib/env.server";
 
 let cached: SupabaseClient | null | undefined;
 
@@ -8,8 +9,9 @@ let cached: SupabaseClient | null | undefined;
  */
 export function getSupabaseAdmin(): SupabaseClient | null {
   if (cached !== undefined) return cached;
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = serverEnv("SUPABASE_URL") ?? serverEnv("VITE_SUPABASE_URL");
+  const key =
+    serverEnv("SUPABASE_SERVICE_ROLE_KEY") ?? serverEnv("SUPABASE_SECRET_KEY");
   if (!url || !key) {
     cached = null;
     return null;
