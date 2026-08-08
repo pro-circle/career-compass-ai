@@ -70,10 +70,6 @@ function SignupPage() {
             ))}
           </ul>
         </div>
-        <div className="rounded-lg border border-white/10 bg-white/5 p-4 text-xs text-background/70">
-          <div className="mb-1 font-bold uppercase tracking-widest text-accent">Demo mode</div>
-          This preview uses the fixed demo account <span className="font-mono text-background">user123 / 1234</span>.
-        </div>
         <div className="pointer-events-none absolute -right-40 -top-40 size-[500px] rounded-full bg-brand/30 blur-3xl" />
       </aside>
 
