@@ -10,24 +10,12 @@ export const Route = createFileRoute("/_app/candidate/cover-letter")({
   component: CoverLetter,
 });
 
-const SAMPLE = `Dear Hiring Team at Linear,
-
-I've followed Linear's product craft closely for the last three years — and joining as your next Senior Product Designer feels like the most natural next step for my career.
-
-At Figma I led the redesign of our design-system tooling, shipping a 40% adoption lift across 12 product teams. That work sharpened my belief that great B2B software is a design problem — one Linear treats with more discipline than almost anyone.
-
-I'd love to bring that same rigor to your team, particularly to the recruiting workflows I've been studying in your recent product updates.
-
-Thanks for considering me.
-
-Jordan Rivera
-`;
 
 function CoverLetter() {
-  const [role, setRole] = useState("Senior Product Designer");
-  const [company, setCompany] = useState("Linear");
+  const [role, setRole] = useState("");
+  const [company, setCompany] = useState("");
   const [tone, setTone] = useState<"confident" | "warm" | "direct">("confident");
-  const [content, setContent] = useState(SAMPLE);
+  const [content, setContent] = useState("");
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
