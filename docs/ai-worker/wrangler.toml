@@ -1,0 +1,6 @@
+name = "ats-engine-ai"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Set with: wrangler secret put GROQ_API_KEY
+# Set with: wrangler secret put ALLOWED_ORIGINS   (comma-separated, e.g. "https://your-app.web.app,https://your-app.firebaseapp.com,http://localhost:8080")
