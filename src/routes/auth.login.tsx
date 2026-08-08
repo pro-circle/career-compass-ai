@@ -1,7 +1,7 @@
 import { ThemeToggle } from "@/components/theme-toggle";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { Sparkles, User, Lock, ArrowRight, Users, Rocket } from "lucide-react";
+import { Sparkles, Mail, Lock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { login, getCurrentSession } from "@/lib/auth.functions";
 
@@ -23,25 +23,26 @@ export const Route = createFileRoute("/auth/login")({
 
 function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("user123");
-  const [password, setPassword] = useState("1234");
-  const [role, setRole] = useState<"employer" | "candidate">("employer");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     try {
-      const res = await login({ data: { username, password, role } });
+      const res = await login({ data: { email, password } });
       if (!res.ok) {
         toast.error(res.error ?? "Sign in failed");
         return;
       }
-      toast.success(`Signed in as ${role}`);
-      if (role === "candidate" && !res.onboarded) {
+      toast.success(`Signed in as ${res.role}`);
+      if (res.role === "candidate" && !res.onboarded) {
         await router.navigate({ to: "/candidate/onboarding" });
       } else {
-        await router.navigate({ to: role === "candidate" ? "/candidate" : "/employer" });
+        await router.navigate({
+          to: res.role === "candidate" ? "/candidate" : "/employer",
+        });
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Sign in failed");
@@ -69,10 +70,6 @@ function LoginPage() {
             Match, screen, interview and offer — all from one workspace that understands your team.
           </p>
         </div>
-        <div className="rounded-lg border border-white/10 bg-white/5 p-4 text-xs text-background/70">
-          <div className="mb-1 font-bold uppercase tracking-widest text-accent">Demo credentials</div>
-          Username <span className="font-mono text-background">user123</span> · Password <span className="font-mono text-background">1234</span>
-        </div>
         <div className="pointer-events-none absolute -right-40 -top-40 size-[500px] rounded-full bg-brand/30 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-40 -left-20 size-[400px] rounded-full bg-accent/20 blur-3xl" />
       </aside>
@@ -84,37 +81,17 @@ function LoginPage() {
             <p className="mt-1 text-sm text-muted-foreground">Sign in to continue to your workspace.</p>
           </div>
 
-          <div className="mb-5 grid grid-cols-2 gap-2 rounded-lg border border-border bg-surface p-1 text-xs font-semibold">
-            <button
-              type="button"
-              onClick={() => setRole("employer")}
-              className={`inline-flex items-center justify-center gap-1.5 rounded-md py-2 transition-colors ${
-                role === "employer" ? "bg-card shadow-sm ring-1 ring-border" : "text-muted-foreground"
-              }`}
-            >
-              <Users className="size-3.5" /> Employer
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole("candidate")}
-              className={`inline-flex items-center justify-center gap-1.5 rounded-md py-2 transition-colors ${
-                role === "candidate" ? "bg-card shadow-sm ring-1 ring-border" : "text-muted-foreground"
-              }`}
-            >
-              <Rocket className="size-3.5" /> Candidate
-            </button>
-          </div>
-
           <form onSubmit={onSubmit} className="space-y-4">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-foreground/80">Username</span>
+              <span className="mb-1.5 block text-xs font-semibold text-foreground/80">Work email</span>
               <div className="relative">
-                <User className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <input
-                  type="text"
+                  type="email"
                   required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-md border border-border bg-surface py-2.5 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
