@@ -3,7 +3,7 @@ import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Sparkles, Mail, Lock, User, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
-import { login, getCurrentSession } from "@/lib/auth.functions";
+import { signup, getCurrentSession } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/auth/signup")({
   head: () => ({ meta: [{ title: "Create account · ATS Engine" }] }),
@@ -19,26 +19,32 @@ export const Route = createFileRoute("/auth/signup")({
 function SignupPage() {
   const router = useRouter();
   const [role, setRole] = useState<"employer" | "candidate">("employer");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
-    // Demo: signup just signs in with the fixed demo credentials.
     try {
-      const res = await login({
-        data: { username: "user123", password: "1234", role },
+      const res = await signup({
+        data: { email, password, fullName, role },
       });
       if (!res.ok) {
-        toast.error("Signup failed — use user123 / 1234 in this demo");
+        toast.error(res.error);
         return;
       }
       toast.success("Account created — welcome to ATS Engine");
-      if (role === "candidate" && !res.onboarded) {
+      if (res.role === "candidate" && !res.onboarded) {
         await router.navigate({ to: "/candidate/onboarding" });
       } else {
-        await router.navigate({ to: role === "candidate" ? "/candidate" : "/employer" });
+        await router.navigate({
+          to: res.role === "candidate" ? "/candidate" : "/employer",
+        });
       }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Signup failed");
     } finally {
       setBusy(false);
     }
@@ -96,9 +102,9 @@ function SignupPage() {
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
-            <Field icon={User} label="Full name" placeholder="Jane Doe" defaultValue="Jane Doe" />
-            <Field icon={Mail} label="Work email" type="email" placeholder="you@company.com" defaultValue="jane@example.com" />
-            <Field icon={Lock} label="Password" type="password" placeholder="At least 8 characters" defaultValue="demoPassword" />
+            <Field icon={User} label="Full name" placeholder="Jane Doe" value={fullName} onChange={setFullName} />
+            <Field icon={Mail} label="Work email" type="email" placeholder="you@company.com" value={email} onChange={setEmail} />
+            <Field icon={Lock} label="Password" type="password" placeholder="At least 8 characters" value={password} onChange={setPassword} />
 
             <label className="flex items-start gap-2 text-xs text-muted-foreground">
               <input type="checkbox" defaultChecked className="mt-0.5 accent-brand" />
@@ -131,13 +137,15 @@ function Field({
   label,
   type = "text",
   placeholder,
-  defaultValue,
+  value,
+  onChange,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   type?: string;
   placeholder?: string;
-  defaultValue?: string;
+  value: string;
+  onChange: (v: string) => void;
 }) {
   return (
     <label className="block">
@@ -148,7 +156,8 @@ function Field({
           type={type}
           required
           placeholder={placeholder}
-          defaultValue={defaultValue}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           className="w-full rounded-md border border-border bg-surface py-2.5 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-brand/20"
         />
       </div>
