@@ -23,15 +23,12 @@ import {
 type Ctx = { userId: string; db: any | null };
 
 export async function huntCtx(): Promise<Ctx> {
-  const { getAppSession, DEMO_CANDIDATE_ID } = await import(
-    "@/lib/session.server"
-  );
+  const { requireUserId } = await import("@/lib/session.server");
   const { getSupabaseAdmin } = await import(
     "@/integrations/supabase/client.server"
   );
-  const session = await getAppSession();
   return {
-    userId: session.data.userId ?? DEMO_CANDIDATE_ID,
+    userId: await requireUserId(),
     db: getSupabaseAdmin(),
   };
 }

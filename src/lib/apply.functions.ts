@@ -71,11 +71,8 @@ export const createJob = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data }) => {
-    const { getAppSession, DEMO_EMPLOYER_ID } = await import(
-      "@/lib/session.server"
-    );
-    const session = await getAppSession();
-    const employerId = session.data.userId ?? DEMO_EMPLOYER_ID;
+    const { requireUserId } = await import("@/lib/session.server");
+        const employerId = await requireUserId();
     const id = `JOB-${Date.now().toString(36).toUpperCase()}`;
     const client = await db();
     if (client) {
@@ -112,11 +109,8 @@ export const applyToJob = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data }) => {
-    const { getAppSession, DEMO_CANDIDATE_ID } = await import(
-      "@/lib/session.server"
-    );
-    const session = await getAppSession();
-    const userId = session.data.userId ?? DEMO_CANDIDATE_ID;
+    const { requireUserId } = await import("@/lib/session.server");
+        const userId = await requireUserId();
     const client = await db();
     if (!client) {
       return { ok: false as const, message: "Backend not configured." };

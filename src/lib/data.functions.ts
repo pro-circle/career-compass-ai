@@ -201,11 +201,8 @@ export const getAnalytics = createServerFn({ method: "GET" }).handler(
 
 export const getCandidateProfile = createServerFn({ method: "GET" }).handler(
   async (): Promise<CandidateProfile | null> => {
-    const { getAppSession, DEMO_CANDIDATE_ID } = await import(
-      "@/lib/session.server"
-    );
-    const session = await getAppSession();
-    const userId = session.data.userId ?? DEMO_CANDIDATE_ID;
+    const { requireUserId } = await import("@/lib/session.server");
+        const userId = await requireUserId();
     const db = await admin();
     if (!db) return null;
     const { data } = await db
