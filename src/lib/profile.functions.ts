@@ -28,7 +28,7 @@ export const saveOnboarding = createServerFn({ method: "POST" })
     );
     const db = getSupabaseAdmin();
     if (!db) {
-      // No DB configured — still mark onboarded in session so demo flow works.
+      // No DB configured — mark onboarded in session so the flow still advances.
       await session.update({ ...session.data, onboarded: true });
       return { ok: true as const, persisted: false };
     }
