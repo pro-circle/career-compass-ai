@@ -37,7 +37,6 @@ import {
 import { toast } from "sonner";
 import { getCurrentSession, logout } from "@/lib/auth.functions";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { MockBanner } from "@/components/mock-banner";
 import { FloatingAssistant } from "@/components/floating-assistant";
 import { usePrefs } from "@/hooks/use-prefs";
 
@@ -394,7 +393,6 @@ function AppLayout() {
       {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar isCandidate={isCandidate} onMenu={() => setMobileOpen(true)} />
-        <MockBanner />
         <main className="flex-1">
           <Outlet />
         </main>

@@ -12,18 +12,15 @@ import {
   type HuntProposal,
   type HuntSettings,
 } from "@/lib/jobhunt.types";
-import { useMockActive } from "@/hooks/use-mock-active";
 
 const INTERVAL_MS = 90_000;
 
 /**
  * Candidate Job Hunt agent client.
  *
- * Safety: every write path lives on the server. While the demo/mock overlay is
- * on, the agent never runs so browsing sample data can't submit applications.
+ * Safety: every write path lives on the server.
  */
 export function useJobHunt() {
-  const mock = useMockActive();
   const [settings, setSettings] = useState<HuntSettings>(DEFAULT_HUNT_SETTINGS);
   const [proposals, setProposals] = useState<HuntProposal[]>([]);
   const [log, setLog] = useState<HuntLogEntry[]>([]);
@@ -52,7 +49,7 @@ export function useJobHunt() {
 
   const runOnce = useCallback(
     async (announce = false) => {
-      if (busy.current || mock) return;
+      if (busy.current) return;
       busy.current = true;
       setRunning(true);
       try {
@@ -83,15 +80,15 @@ export function useJobHunt() {
         setRunning(false);
       }
     },
-    [mock],
+    [],
   );
 
   useEffect(() => {
-    if (!settings.enabled || mock) return;
+    if (!settings.enabled) return;
     void runOnce();
     const t = setInterval(() => void runOnce(), INTERVAL_MS);
     return () => clearInterval(t);
-  }, [settings.enabled, mock, runOnce]);
+  }, [settings.enabled, runOnce]);
 
   const update = useCallback(
     async (patch: Partial<HuntSettings>) => {
