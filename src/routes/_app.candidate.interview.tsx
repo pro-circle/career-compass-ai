@@ -3,8 +3,10 @@ import { useState } from "react";
 import { PageHeader } from "@/routes/_app";
 import { SectionCard } from "@/components/dashboard/primitives";
 import { useDataset } from "@/hooks/use-dataset";
-import { Mic, Type, Play, Sparkles, TrendingUp } from "lucide-react";
+import { Mic, Play, Sparkles, Square, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { useSpeechInput } from "@/hooks/use-speech-input";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_app/candidate/interview")({
   head: () => ({ meta: [{ title: "Mock Interview · ATS Engine" }] }),
@@ -18,15 +20,19 @@ function MockInterview() {
     ...(interviewQuestions.technical ?? []),
     ...(interviewQuestions.behavioral ?? []),
   ];
-  const [mode, setMode] = useState<"voice" | "text">("voice");
   const [step, setStep] = useState(0);
-  const [answer, setAnswer] = useState("");
   const [done, setDone] = useState(false);
   const [answers, setAnswers] = useState<string[]>([]);
+  const voice = useSpeechInput();
+
+  useEffect(() => {
+    if (voice.error) toast.error(voice.error);
+  }, [voice.error]);
 
   function next() {
-    setAnswers((a) => [...a, answer || "(voice answer recorded)"]);
-    setAnswer("");
+    if (voice.listening) voice.stop();
+    setAnswers((a) => [...a, voice.transcript || "(no answer captured)"]);
+    voice.reset();
     if (step + 1 >= questions.length) {
       setDone(true);
       toast.success("Interview complete — generating report");
@@ -35,30 +41,15 @@ function MockInterview() {
     }
   }
 
-  if (done) return <Report onRestart={() => { setDone(false); setStep(0); setAnswers([]); }} />;
+  if (done)
+    return <Report onRestart={() => { setDone(false); setStep(0); setAnswers([]); }} />;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <PageHeader
         eyebrow="AI mock interview"
         title="Practice like it's real"
-        subtitle="Voice or text — receive structured feedback on every answer."
-        actions={
-          <div className="flex rounded-md border border-border bg-card p-0.5 text-xs">
-            <button
-              onClick={() => setMode("voice")}
-              className={`inline-flex items-center gap-1 rounded px-3 py-1.5 font-semibold ${mode === "voice" ? "bg-accent text-accent-foreground" : "text-muted-foreground"}`}
-            >
-              <Mic className="size-3" /> Voice
-            </button>
-            <button
-              onClick={() => setMode("text")}
-              className={`inline-flex items-center gap-1 rounded px-3 py-1.5 font-semibold ${mode === "text" ? "bg-accent text-accent-foreground" : "text-muted-foreground"}`}
-            >
-              <Type className="size-3" /> Text
-            </button>
-          </div>
-        }
+        subtitle="Speak your answers out loud — the coach transcribes and scores you live."
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -79,25 +70,34 @@ function MockInterview() {
               </div>
             </div>
 
-            {mode === "text" ? (
-              <textarea
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                rows={6}
-                placeholder="Type your answer — aim for the STAR framework."
-                className="w-full rounded-md border border-border bg-surface px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-accent/20"
-              />
-            ) : (
-              <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-dashed border-border bg-surface/40 py-10">
-                <button
-                  onClick={() => toast.success("Recording…")}
-                  className="grid size-16 place-items-center rounded-full bg-accent text-accent-foreground hover:scale-105 transition-transform"
-                >
-                  <Mic className="size-6" />
-                </button>
-                <div className="text-xs text-muted-foreground">Tap to record your answer</div>
+            <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-dashed border-border bg-surface/40 px-6 py-10">
+              <button
+                onClick={() => (voice.listening ? voice.stop() : voice.start())}
+                disabled={!voice.supported}
+                aria-pressed={voice.listening}
+                aria-label={voice.listening ? "Stop recording" : "Start recording"}
+                className={`grid size-16 place-items-center rounded-full transition-transform hover:scale-105 disabled:opacity-40 ${
+                  voice.listening
+                    ? "animate-pulse bg-accent text-accent-foreground ring-8 ring-accent/20"
+                    : "bg-accent text-accent-foreground"
+                }`}
+              >
+                {voice.listening ? <Square className="size-5" /> : <Mic className="size-6" />}
+              </button>
+              <div className="text-xs text-muted-foreground">
+                {!voice.supported
+                  ? "Voice input isn't supported in this browser."
+                  : voice.listening
+                    ? "Listening — speak your answer"
+                    : "Tap to record your answer"}
               </div>
-            )}
+              {(voice.transcript || voice.interim) && (
+                <p className="max-h-40 w-full overflow-y-auto rounded-lg bg-card p-4 text-sm leading-relaxed">
+                  {voice.transcript}{" "}
+                  <span className="text-muted-foreground">{voice.interim}</span>
+                </p>
+              )}
+            </div>
 
             <div className="mt-6 flex justify-end gap-2">
               <button
