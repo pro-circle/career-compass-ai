@@ -17,8 +17,11 @@ const profileInput = z.object({
 export const saveOnboarding = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => profileInput.parse(data))
   .handler(async ({ data }) => {
-    const { requireUserId } = await import("@/lib/session.server");
-        const userId = await requireUserId();
+    const { getAppSession, requireUserId } = await import(
+      "@/lib/session.server"
+    );
+    const userId = await requireUserId();
+    const session = await getAppSession();
 
     const { getSupabaseAdmin } = await import(
       "@/integrations/supabase/client.server"
