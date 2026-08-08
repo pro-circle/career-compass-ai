@@ -3,6 +3,7 @@ import { useState } from "react";
 import { PageHeader } from "@/routes/_app";
 import { SectionCard } from "@/components/dashboard/primitives";
 import { useDataset } from "@/hooks/use-dataset";
+import { useProfile } from "@/hooks/use-profile";
 import { Plus, Image as ImageIcon, ExternalLink, Github, Globe } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/_app/candidate/portfolio")({
 
 function PortfolioPage() {
   const { portfolioProjects: projects } = useDataset();
+  const { profile, initials } = useProfile();
   const [view, setView] = useState<"grid" | "list">("grid");
 
   return (
