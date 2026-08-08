@@ -2,24 +2,80 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/routes/_app";
 import { SectionCard, StatTile } from "@/components/dashboard/primitives";
 import { useDataset } from "@/hooks/use-dataset";
-import { ArrowRight, Bell, Mic, Sparkles, Target, Wand2 } from "lucide-react";
+import {
+  ArrowRight,
+  Bell,
+  FileText,
+  ImageIcon,
+  Link2,
+  Mic,
+  Rocket,
+  Sparkles,
+  Wand2,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_app/candidate/")({
-  head: () => ({ meta: [{ title: "Candidate Overview · ATS Engine" }] }),
+  head: () => ({
+    meta: [
+      { title: "Candidate Overview · ATS Engine" },
+      {
+        name: "description",
+        content:
+          "Follow one guided flow: upload your resume, pick a job, let the agent tailor and prepare you, then apply.",
+      },
+    ],
+  }),
   component: CandidateHome,
 });
 
+const FLOW = [
+  {
+    step: "01",
+    title: "Upload resume & profile",
+    detail: "Parse your experience once — every later step reuses it.",
+    to: "/candidate/resume" as const,
+    icon: FileText,
+  },
+  {
+    step: "02",
+    title: "Pick a job or paste a link",
+    detail: "Choose a match, or drop any job URL and we'll read it.",
+    to: "/candidate/external" as const,
+    icon: Link2,
+  },
+  {
+    step: "03",
+    title: "Tailor resume & cover letter",
+    detail: "The agent rewrites both against that exact posting.",
+    to: "/candidate/cover-letter" as const,
+    icon: Wand2,
+  },
+  {
+    step: "04",
+    title: "Practice the interview",
+    detail: "Voice-led mock, with a coding round when the role needs it.",
+    to: "/candidate/interview" as const,
+    icon: Mic,
+  },
+  {
+    step: "05",
+    title: "Apply — or let the agent do it",
+    detail: "Review each match, or hand the hunt to the Job Hunt agent.",
+    to: "/candidate/job-hunt" as const,
+    icon: Rocket,
+  },
+];
+
 function CandidateHome() {
-  const { applications, jobMatches, notifications, roadmap } = useDataset();
+  const { applications, jobMatches, notifications } = useDataset();
   const activeApps = applications.filter((a) => a.stage !== "Rejected");
-  const nextInterview = applications.find((a) => a.nextStep);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <PageHeader
         eyebrow="Candidate portal"
         title="Welcome back, Jordan"
-        subtitle="Your readiness is trending up. Here's what to focus on this week."
+        subtitle="One flow, start to offer. Pick up wherever you left off."
       />
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -28,6 +84,30 @@ function CandidateHome() {
         <StatTile label="Interview readiness" value="82%" delta="+11%" positive />
         <StatTile label="New matches" value="5" delta="+3" positive />
       </div>
+
+      <SectionCard title="Your flow" className="mb-6">
+        <div className="grid gap-px bg-border sm:grid-cols-2 xl:grid-cols-5">
+          {FLOW.map((f) => (
+            <Link
+              key={f.step}
+              to={f.to}
+              className="group bg-card p-5 transition-colors hover:bg-surface/60"
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <span className="font-mono text-[10px] font-bold text-muted-foreground">
+                  {f.step}
+                </span>
+                <f.icon className="size-4 text-accent" />
+              </div>
+              <div className="text-sm font-bold">{f.title}</div>
+              <p className="mt-1 text-xs text-muted-foreground">{f.detail}</p>
+              <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-accent opacity-0 transition-opacity group-hover:opacity-100">
+                Continue <ArrowRight className="size-3" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </SectionCard>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
@@ -55,40 +135,25 @@ function CandidateHome() {
               ))}
             </div>
           </SectionCard>
-
-          <SectionCard title="Your career roadmap" action={<Link to="/candidate/skills" className="text-xs font-medium text-accent hover:underline">Open roadmap</Link>}>
-            <div className="space-y-3 p-5">
-              {roadmap.map((r) => (
-                <div key={r.week} className="flex gap-4">
-                  <div className={`mt-1 size-4 shrink-0 rounded-full ring-4 ${r.done ? "bg-accent ring-accent/20" : "bg-surface ring-border"}`} />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-semibold">{r.title}</div>
-                      <div className="text-[10px] font-mono text-muted-foreground">{r.week}</div>
-                    </div>
-                    <div className="text-xs text-muted-foreground">{r.detail}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </SectionCard>
         </div>
 
         <div className="space-y-6">
           <div className="rounded-xl bg-foreground p-6 text-background">
             <div className="mb-4 flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase tracking-widest text-background/60">Next milestone</h4>
+              <h4 className="text-xs font-bold uppercase tracking-widest text-background/60">
+                Job Hunt agent
+              </h4>
               <Sparkles className="size-4 text-accent" />
             </div>
-            <div className="mb-1 text-sm font-bold">{nextInterview?.nextStep ?? "AI Mock Interview"}</div>
             <p className="text-xs text-background/70">
-              Complete a systems-design mock to unlock the "Elite Applicant" badge on your public profile.
+              Let the agent scan sources, tailor each application, and apply on your behalf —
+              in review mode it asks first.
             </p>
             <Link
-              to="/candidate/interview"
+              to="/candidate/job-hunt"
               className="mt-5 inline-flex items-center gap-1 rounded-md bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground hover:opacity-90"
             >
-              <Mic className="size-3.5" /> Start mock
+              <Rocket className="size-3.5" /> Open Job Hunt
             </Link>
           </div>
 
@@ -112,10 +177,10 @@ function CandidateHome() {
               <div className="mt-2 text-xs font-bold">Optimize resume</div>
               <div className="text-[10px] text-muted-foreground">Improve ATS score</div>
             </Link>
-            <Link to="/candidate/skills" className="rounded-xl border border-border bg-card p-4 hover:border-accent/40">
-              <Target className="size-4 text-accent" />
-              <div className="mt-2 text-xs font-bold">Skill gap</div>
-              <div className="text-[10px] text-muted-foreground">See what's missing</div>
+            <Link to="/candidate/portfolio" className="rounded-xl border border-border bg-card p-4 hover:border-accent/40">
+              <ImageIcon className="size-4 text-accent" />
+              <div className="mt-2 text-xs font-bold">Portfolio</div>
+              <div className="text-[10px] text-muted-foreground">Build from templates</div>
             </Link>
           </div>
         </div>
