@@ -276,7 +276,7 @@ function Landing() {
                 Candidate experience
               </span>
               <h2 className="mt-2 font-display text-4xl font-extrabold leading-[1.1]">
-                Your career roadmap, <span className="text-muted-foreground">perfected.</span>
+                Your job hunt, <span className="text-muted-foreground">on autopilot.</span>
               </h2>
               <p className="mt-4 leading-relaxed text-muted-foreground">
                 We don't just match you — we train you. Real-time resume feedback,
