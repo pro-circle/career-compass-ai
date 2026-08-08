@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "AI-powered applicant tracking. Neural resume matching, ranking, mock interviews, and personalized career roadmaps — for recruiters and candidates.",
+          "AI-powered applicant tracking. Neural resume matching, ranking, mock interviews, and an autonomous job-hunt agent — for recruiters and candidates.",
       },
     ],
   }),
@@ -39,7 +39,7 @@ const aiFeatures = [
   { icon: FileText, title: "Resume Builder", desc: "Create ATS-friendly professional resumes." },
   { icon: Wand2, title: "Resume Optimizer", desc: "Improve ATS score and job relevance." },
   { icon: Languages, title: "Resume Translator", desc: "Convert resumes into multiple languages." },
-  { icon: Mic, title: "AI Mock Interview", desc: "Voice & text interview practice with feedback." },
+  { icon: Mic, title: "AI Mock Interview", desc: "Live voice interview practice with feedback." },
   { icon: MessagesSquare, title: "Career Assistant", desc: "Answers career and job-related queries." },
 ];
 
@@ -49,9 +49,9 @@ const employerFeatures = [
   "AI ranking & side-by-side compare",
   "Portfolio viewer — GitHub, LinkedIn, sites",
   "Smart search & advanced filters",
-  "Interview question generator",
+  "Guided per-role flow: screen → compare → manage → outreach",
   "Recruitment analytics & trends",
-  "Interview scheduling & messaging",
+  "Email & in-app outreach to shortlists",
 ];
 
 const candidateFeatures = [
@@ -61,8 +61,8 @@ const candidateFeatures = [
   "External job preparation for any posting",
   "One-click apply & auto-apply",
   "AI mock interview + report",
-  "Skill gap analysis & radar",
-  "Personalized learning roadmap",
+  "Autonomous Job Hunt agent",
+  "Portfolio builder from templates",
   "Application tracking + notifications",
 ];
 
@@ -137,7 +137,7 @@ function Landing() {
             </div>
             <h3 className="font-display text-xl font-bold">For Candidates</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Optimize your profile, simulate interviews, and track your career roadmap.
+              Optimize your profile, rehearse by voice, and let the agent apply for you.
             </p>
             <div className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-accent underline underline-offset-4 group-hover:gap-2 transition-all">
               Launch Career Suite <ArrowRight className="size-4" />
