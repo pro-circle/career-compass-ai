@@ -23,7 +23,7 @@ export const Route = createFileRoute("/api/chat")({
 
         if (!hasAnyProvider()) {
           return new Response(
-            "No AI provider configured. Set GROQ_API_KEY_1/2/3 or GEMINI_API_KEY in .env.",
+            "No AI provider configured. Set GEMINI_API_KEY (primary) or GROQ_API_KEY_1/2/3.",
             { status: 500 },
           );
         }
