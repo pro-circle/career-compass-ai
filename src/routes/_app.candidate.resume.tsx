@@ -4,6 +4,7 @@ import { PageHeader } from "@/routes/_app";
 import { SectionCard } from "@/components/dashboard/primitives";
 import { UploadCloud, FileText, Wand2, Languages, Sparkles, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useProfile } from "@/hooks/use-profile";
 
 type Tab = "upload" | "builder" | "optimizer" | "translator";
 
@@ -105,32 +106,41 @@ function ResumeStudio() {
           <SectionCard title="Live preview">
             <div className="space-y-4 p-8 font-sans text-sm">
               <div>
-                <div className="font-display text-2xl font-extrabold">Jordan Rivera</div>
-                <div className="text-xs text-muted-foreground">Senior Product Designer · Brooklyn, NY</div>
-              </div>
-              <div className="border-t border-border pt-3">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Summary
+                <div className="font-display text-2xl font-extrabold">
+                  {profile?.fullName || "Your name"}
                 </div>
-                <p className="mt-1 text-xs text-foreground/80">
-                  Designer with 7 years crafting high-scale B2B systems at Linear and Figma…
-                </p>
-              </div>
-              <div className="border-t border-border pt-3">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Experience
+                <div className="text-xs text-muted-foreground">
+                  {[profile?.headline, profile?.location].filter(Boolean).join(" · ") ||
+                    "Add a headline in onboarding"}
                 </div>
-                <div className="mt-2 space-y-2">
-                  <div>
-                    <div className="text-xs font-semibold">Senior Designer · Linear</div>
-                    <div className="text-[10px] text-muted-foreground">2022 — Present</div>
+              </div>
+              {(resume?.summary || profile?.resumeText) && (
+                <div className="border-t border-border pt-3">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Summary
                   </div>
-                  <div>
-                    <div className="text-xs font-semibold">Product Designer · Figma</div>
-                    <div className="text-[10px] text-muted-foreground">2019 — 2022</div>
+                  <p className="mt-1 text-xs text-foreground/80">
+                    {resume?.summary ?? profile?.resumeText.slice(0, 240)}
+                  </p>
+                </div>
+              )}
+              {!!resume?.experience?.length && (
+                <div className="border-t border-border pt-3">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Experience
+                  </div>
+                  <div className="mt-2 space-y-2">
+                    {resume.experience.slice(0, 5).map((e, i) => (
+                      <div key={i}>
+                        <div className="text-xs font-semibold">
+                          {[e.title, e.company].filter(Boolean).join(" · ")}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">{e.dates}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </SectionCard>
         </div>
